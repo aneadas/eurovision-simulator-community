@@ -4,7 +4,7 @@ Welcome to the community-driven Eurovision Song Contest Simulator! This project 
 
 This project is a continuation and revival of the original Eurovision Simulator created by **u/Successful_Sky7328**. We're excited to build upon their fantastic foundational work and bring new features to the Eurovision fan community!
 
-**Live Simulator:** [WSTAW TUTAJ LINK DO DZIAŁAJĄCEGO SYMULATORA]
+**Live Simulator:** [https://aneadas.github.io/eurovision-simulator-community/]
 
 ## About The Project
 
