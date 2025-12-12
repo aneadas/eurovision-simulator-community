@@ -1093,6 +1093,36 @@
             color: #FFD700;
         }
 
+        /* Leaderboard Tabs */
+        .leaderboard-tabs {
+            display: flex;
+            background: rgba(0, 0, 0, 0.2);
+            padding: 10px 10px 0;
+            gap: 5px;
+            overflow-x: auto;
+        }
+
+        .leaderboard-tab {
+            padding: 10px 20px;
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            border: none;
+            border-radius: 10px 10px 0 0;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: bold;
+            white-space: nowrap;
+        }
+
+        .leaderboard-tab:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .leaderboard-tab.active {
+            background: #fff;
+            color: #c41e3a;
+        }
+
         /* ===== CHRISTMAS LEADERBOARD STYLES ===== */
         .leaderboard-header {
             background: linear-gradient(135deg, #c41e3a 0%, #8B0000 100%);
@@ -2669,7 +2699,7 @@
                 if (sortedCountries.length > 0 && typeof window.recordSimulationWin === 'function') {
                     const winnerCountry = sortedCountries[0];
                     const winnerCode = getCountryCode(winnerCountry);
-                    window.recordSimulationWin(winnerCountry, winnerCode);
+                    window.recordSimulationWin(winnerCountry, winnerCode, results, sortedCountries);
                     console.log(`🏆 Winner recorded: ${winnerCountry} (${winnerCode})`);
                 }
 
@@ -5355,42 +5385,76 @@
                 console.error('Firebase initialization error:', error);
             }
 
-            // Record a simulation win to Firebase
-            async function recordSimulationWin(countryName, countryCode) {
+            // Record a simulation win to Firebase with detailed stats
+            async function recordSimulationWin(winnerCountry, winnerCode, results, sortedCountries) {
                 if (!firebaseEnabled || !db) return;
 
                 try {
-                    const docRef = db.collection('leaderboard').doc(countryCode);
-                    const doc = await docRef.get();
+                    const batch = db.batch();
 
-                    if (doc.exists) {
-                        await docRef.update({
-                            wins: firebase.firestore.FieldValue.increment(1),
-                            lastWin: new Date().toISOString()
+                    // 1. Overall Winner
+                    const winnerRef = db.collection('leaderboard').doc(winnerCode);
+                    batch.set(winnerRef, {
+                        country: winnerCountry,
+                        code: winnerCode,
+                        wins: firebase.firestore.FieldValue.increment(1),
+                        lastWin: new Date().toISOString()
+                    }, { merge: true });
+
+                    // 2. Jury Winner (Calculate from results)
+                    if (results && sortedCountries) {
+                        let juryWinner = sortedCountries[0];
+                        let maxJury = -1;
+                        sortedCountries.forEach(c => {
+                            if (results[c].juryTotal > maxJury) {
+                                maxJury = results[c].juryTotal;
+                                juryWinner = c;
+                            }
                         });
-                    } else {
-                        await docRef.set({
-                            country: countryName,
-                            code: countryCode,
-                            wins: 1,
-                            lastWin: new Date().toISOString()
+                        const juryCode = getCountryCode(juryWinner);
+                        const juryRef = db.collection('leaderboard').doc(juryCode);
+                        batch.set(juryRef, {
+                            country: juryWinner,
+                            code: juryCode,
+                            juryWins: firebase.firestore.FieldValue.increment(1)
+                        }, { merge: true });
+
+                        // 3. Televote Winner
+                        let teleWinner = sortedCountries[0];
+                        let maxTele = -1;
+                        sortedCountries.forEach(c => {
+                            if (results[c].teleTotal > maxTele) {
+                                maxTele = results[c].teleTotal;
+                                teleWinner = c;
+                            }
                         });
+                        const teleCode = getCountryCode(teleWinner);
+                        const teleRef = db.collection('leaderboard').doc(teleCode);
+                        batch.set(teleRef, {
+                            country: teleWinner,
+                            code: teleCode,
+                            teleWins: firebase.firestore.FieldValue.increment(1)
+                        }, { merge: true });
+
+                        // 4. Last Place (Wooden Spoon)
+                        const lastPlace = sortedCountries[sortedCountries.length - 1];
+                        const lastCode = getCountryCode(lastPlace);
+                        const lastRef = db.collection('leaderboard').doc(lastCode);
+                        batch.set(lastRef, {
+                            country: lastPlace,
+                            code: lastCode,
+                            lastPlaces: firebase.firestore.FieldValue.increment(1)
+                        }, { merge: true });
                     }
 
-                    // Also increment total simulations
+                    // 5. Total Simulations
                     const statsRef = db.collection('leaderboard').doc('_stats');
-                    const statsDoc = await statsRef.get();
-                    if (statsDoc.exists) {
-                        await statsRef.update({
-                            totalSimulations: firebase.firestore.FieldValue.increment(1)
-                        });
-                    } else {
-                        await statsRef.set({
-                            totalSimulations: 1
-                        });
-                    }
+                    batch.set(statsRef, {
+                        totalSimulations: firebase.firestore.FieldValue.increment(1)
+                    }, { merge: true });
 
-                    console.log(`🏆 Recorded win for ${countryName}`);
+                    await batch.commit();
+                    console.log(`🏆 Recorded detailed stats to Firebase`);
                 } catch (error) {
                     console.error('Error recording win:', error);
                 }
@@ -5399,19 +5463,14 @@
             // Fetch leaderboard data from Firebase
             async function fetchLeaderboardData() {
                 if (!firebaseEnabled || !db) {
-                    // Return demo data if Firebase not configured
+                    // Demo data
                     return {
                         countries: [
-                            { country: 'Sweden', code: 'se', wins: 127 },
-                            { country: 'Italy', code: 'it', wins: 98 },
-                            { country: 'Ukraine', code: 'ua', wins: 87 },
-                            { country: 'France', code: 'fr', wins: 76 },
-                            { country: 'Switzerland', code: 'ch', wins: 65 },
-                            { country: 'Netherlands', code: 'nl', wins: 54 },
-                            { country: 'United Kingdom', code: 'gb', wins: 48 },
-                            { country: 'Germany', code: 'de', wins: 42 },
-                            { country: 'Spain', code: 'es', wins: 38 },
-                            { country: 'Norway', code: 'no', wins: 35 }
+                            { country: 'Sweden', code: 'se', wins: 127, juryWins: 80, teleWins: 50, lastPlaces: 2 },
+                            { country: 'Italy', code: 'it', wins: 98, juryWins: 60, teleWins: 90, lastPlaces: 0 },
+                            { country: 'Ukraine', code: 'ua', wins: 87, juryWins: 40, teleWins: 110, lastPlaces: 1 },
+                            { country: 'United Kingdom', code: 'gb', wins: 48, juryWins: 55, teleWins: 20, lastPlaces: 15 },
+                            { country: 'Germany', code: 'de', wins: 42, juryWins: 30, teleWins: 10, lastPlaces: 25 },
                         ],
                         totalSimulations: 892,
                         isDemo: true
@@ -5419,34 +5478,20 @@
                 }
 
                 try {
-                    // 1. Fetch Top 20 Countries
-                    const snapshot = await db.collection('leaderboard')
-                        .orderBy('wins', 'desc')
-                        .limit(20)
-                        .get();
+                    // Fetch ALL countries (small dataset ~50 docs, one read per doc, acceptable for this scale)
+                    // This allows client-side sorting for all tabs without needing multiple indexes
+                    const snapshot = await db.collection('leaderboard').get();
 
                     const countries = [];
+                    let totalSimulations = 0;
+
                     snapshot.forEach(doc => {
-                        // Filter out _stats if it accidentally appears (unlikely with orderBy wins)
-                        if (doc.id !== '_stats') {
+                        if (doc.id === '_stats') {
+                            totalSimulations = doc.data().totalSimulations || 0;
+                        } else {
                             countries.push(doc.data());
                         }
                     });
-
-                    // 2. Fetch Total Simulations Stats separately
-                    let totalSimulations = 0;
-                    try {
-                        const statsDoc = await db.collection('leaderboard').doc('_stats').get();
-                        if (statsDoc.exists) {
-                            totalSimulations = statsDoc.data().totalSimulations || 0;
-                        } else {
-                            // Calculates total from visible countries if _stats is missing (fallback)
-                            totalSimulations = countries.reduce((acc, curr) => acc + (curr.wins || 0), 0);
-                        }
-                    } catch (e) {
-                        console.log('Could not fetch stats, using local sum');
-                        totalSimulations = countries.reduce((acc, curr) => acc + (curr.wins || 0), 0);
-                    }
 
                     return { countries, totalSimulations, isDemo: false };
                 } catch (error) {
@@ -5457,44 +5502,67 @@
 
             // Show Leaderboard Modal
             async function showLeaderboard() {
+                // Loading state
                 const loadingHTML = `
-<div class="modal fade" id="leaderboardModal" tabindex="-1">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header" style="background: linear-gradient(135deg, #c41e3a 0%, #8B0000 100%); color: #FFD700;">
-                <h5 class="modal-title"><span class="trophy-icon">🏆</span> Christmas Leaderboard</h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body">
-                <div class="leaderboard-loading">
-                    <div class="spinner"></div>
-                    <p>Loading global statistics...</p>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-                `;
+                <div class="modal fade" id="leaderboardModal" tabindex="-1">
+                    <div class="modal-dialog modal-lg">
+                        <div class="modal-content">
+                            <div class="modal-header leaderboard-header">
+                                <h5 class="modal-title"><span class="trophy-icon">🏆</span> Christmas Leaderboard</h5>
+                                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                            </div>
+                            <div class="leaderboard-tabs">
+                                <button class="leaderboard-tab active" onclick="switchTab('wins')">🏆 Overall</button>
+                                <button class="leaderboard-tab" onclick="switchTab('juryWins')">⚖️ Jury Favorites</button>
+                                <button class="leaderboard-tab" onclick="switchTab('teleWins')">☎️ Public Favorites</button>
+                                <button class="leaderboard-tab" onclick="switchTab('lastPlaces')">🥄 Wooden Spoon</button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="leaderboard-loading">
+                                    <div class="spinner"></div>
+                                    <p>Loading global statistics...</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>`;
 
                 const existingModal = document.getElementById('leaderboardModal');
                 if (existingModal) existingModal.remove();
-
                 document.body.insertAdjacentHTML('beforeend', loadingHTML);
                 const modal = new bootstrap.Modal(document.getElementById('leaderboardModal'));
                 modal.show();
 
-                // Fetch data
+                // Fetch Data
                 const data = await fetchLeaderboardData();
+                window.leaderboardData = data.countries; // Store for tab switching
 
-                // Build leaderboard HTML
+                // Render initial tab (Wins)
+                renderLeaderboardTable('wins', data.totalSimulations, data.isDemo);
+            }
+
+            // Render Table Function (Global scope for onclick access)
+            window.renderLeaderboardTable = function (sortBy, totalSims, isDemo) {
+                const countries = window.leaderboardData || [];
+
+                // Sort data
+                countries.sort((a, b) => (b[sortBy] || 0) - (a[sortBy] || 0));
+
+                // Slice top 20
+                const topCountries = countries.slice(0, 20);
+
                 let tableRows = '';
-                data.countries.forEach((country, index) => {
+                topCountries.forEach((country, index) => {
+                    if (!country[sortBy] && country[sortBy] !== 0) return; // Skip if no data for this metric
+
                     let rankClass = '';
                     let rankDisplay = index + 1;
-
                     if (index === 0) { rankClass = 'gold'; rankDisplay = '🥇'; }
                     else if (index === 1) { rankClass = 'silver'; rankDisplay = '🥈'; }
                     else if (index === 2) { rankClass = 'bronze'; rankDisplay = '🥉'; }
+
+                    let valueClass = sortBy === 'lastPlaces' ? 'text-muted' : 'text-danger';
+                    if (sortBy === 'wins') valueClass = 'text-primary';
 
                     tableRows += `
                         <tr>
@@ -5503,41 +5571,35 @@
                                 <span class="flag-icon flag-icon-${country.code}" style="margin-right: 10px;"></span>
                                 ${country.country}
                             </td>
-                            <td style="font-weight: bold; color: #c41e3a;">${country.wins}</td>
+                            <td style="font-weight: bold;" class="${valueClass}">${country[sortBy] || 0}</td>
                         </tr>
                     `;
                 });
 
-                const demoNotice = data.isDemo ? `
-                    <div class="alert alert-warning mt-3">
-                        <strong>📝 Demo Mode:</strong> Firebase is not configured. 
-                        This is sample data. Configure Firebase to see real global statistics!
-                    </div>
-                ` : '';
+                let headerText = 'Wins';
+                if (sortBy === 'juryWins') headerText = 'Jury Wins';
+                if (sortBy === 'teleWins') headerText = 'Televote Wins';
+                if (sortBy === 'lastPlaces') headerText = 'Last Places';
 
-                const leaderboardContent = `
-                    <div class="leaderboard-stats">
+                const content = `
+                   <div class="leaderboard-stats">
                         <div class="leaderboard-stat-card">
-                            <div class="stat-value">${data.totalSimulations.toLocaleString()}</div>
-                            <div class="stat-label">🌍 Total Simulations</div>
+                            <div class="stat-value">${totalSims ? totalSims.toLocaleString() : 0}</div>
+                            <div class="stat-label">🌍 Global Simulations</div>
                         </div>
                         <div class="leaderboard-stat-card">
-                            <div class="stat-value">${data.countries.length}</div>
+                            <div class="stat-value">${countries.length}</div>
                             <div class="stat-label">🏳️ Countries Tracked</div>
                         </div>
-                        <div class="leaderboard-stat-card">
-                            <div class="stat-value">${data.countries[0]?.country || 'N/A'}</div>
-                            <div class="stat-label">👑 Most Wins</div>
-                        </div>
-                    </div>
-                    ${demoNotice}
-                    <div style="max-height: 400px; overflow-y: auto; margin-top: 15px;">
+                   </div>
+                   ${isDemo ? '<div class="alert alert-warning mt-2">📝 Demo Mode: Configure Firebase to see real stats!</div>' : ''}
+                   <div style="max-height: 400px; overflow-y: auto; margin-top: 15px;">
                         <table class="leaderboard-table">
                             <thead>
                                 <tr>
                                     <th style="width: 60px;">Rank</th>
                                     <th>Country</th>
-                                    <th style="width: 100px;">Wins</th>
+                                    <th style="width: 120px;">${headerText}</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -5547,8 +5609,21 @@
                     </div>
                 `;
 
-                document.querySelector('#leaderboardModal .modal-body').innerHTML = leaderboardContent;
-            }
+                const tableContainer = document.querySelector('#leaderboardModal .modal-body');
+                if (tableContainer) tableContainer.innerHTML = content;
+            };
+
+            window.switchTab = function (sortBy) {
+                // Update active tab styling
+                document.querySelectorAll('.leaderboard-tab').forEach(btn => btn.classList.remove('active'));
+                event.target.classList.add('active');
+
+                // Get totalSims from DOM or global var (simplified here)
+                const totalSims = document.querySelector('.leaderboard-stat-card .stat-value').textContent.replace(/,/g, '');
+                const isDemo = document.querySelector('.alert-warning') !== null;
+
+                renderLeaderboardTable(sortBy, parseInt(totalSims), isDemo);
+            };
 
             // Leaderboard button click handler
             document.getElementById('leaderboardButton').addEventListener('click', showLeaderboard);
