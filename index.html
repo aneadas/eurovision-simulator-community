@@ -5357,10 +5357,13 @@
                 _f: "G-DPX10D8Z9E"
             };
 
-
+            
             const _0xPayload = [
-                "DL}dV|Gp6}]zQlif}Q9zhvEMQtvP<dD;05ORg:T", 
-            ]; function _0xDecrypt(_s) {
+                "DLcdV|Gp6}CzQliT}Q9zhvEMQtvP<dEh15XRg:T", // Encrypted segment
+            ];
+
+            
+            function _0xDecrypt(_s) {
                 let _r = "";
                 for (let i = 0; i < _s.length; i++) {
                     _r += String.fromCharCode(_s.charCodeAt(i) - 3);
@@ -5368,11 +5371,11 @@
                 return _r;
             }
 
-
+           
             function _0xGetConfig() {
                 const _h = window.location.hostname;
 
-
+                
                 const _isSecure = _h.includes('github.io') || _h.includes('localhost') || _h.includes('127.0.0.1');
 
                 if (!_isSecure) {
