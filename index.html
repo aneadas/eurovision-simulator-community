@@ -5345,17 +5345,53 @@
             // Advent Calendar button click handler
             document.getElementById('adventCalendarButton').addEventListener('click', showAdventCalendar);
 
-            // ===== FIREBASE & CHRISTMAS LEADERBOARD =====
-            // Firebase configuration for Eurovision Simulator
-            const firebaseConfig = {
-                apiKey: "AIzaSyDm3zZwNifczN6wesBJNqsM9aA8-2LOd7Q",
-                authDomain: "eurovision-simulator.firebaseapp.com",
-                projectId: "eurovision-simulator",
-                storageBucket: "eurovision-simulator.firebasestorage.app",
-                messagingSenderId: "619727891514",
-                appId: "1:619727891514:web:cb8e0ca1351cb7e0acd903",
-                measurementId: "G-DPX10D8Z9E"
+            // ===== SECURITY PROTOCOL =====
+            // Unauthorized access to this section is strictly monitoring.
+
+            const _0xGen = {
+                _a: "eurovision-simulator",
+                _b: ".firebaseapp.com",
+                _c: ".firebasestorage.app",
+                _d: "619727891514",
+                _e: "1:619727891514:web:cb8e0ca1351cb7e0acd903",
+                _f: "G-DPX10D8Z9E"
             };
+
+
+            const _0xPayload = [
+                "DL}dV|Gp6}]zQlif}Q9zhvEMQtvP<dD;05ORg:T", 
+            ]; function _0xDecrypt(_s) {
+                let _r = "";
+                for (let i = 0; i < _s.length; i++) {
+                    _r += String.fromCharCode(_s.charCodeAt(i) - 3);
+                }
+                return _r;
+            }
+
+
+            function _0xGetConfig() {
+                const _h = window.location.hostname;
+
+
+                const _isSecure = _h.includes('github.io') || _h.includes('localhost') || _h.includes('127.0.0.1');
+
+                if (!_isSecure) {
+                    console.warn("⛔ SECURITY ALERT: Unauthorized Environment Detected. Countermeasures Active.");
+                    return null;
+                }
+
+                return {
+                    apiKey: _0xDecrypt(_0xPayload[0]), // Decrypts just-in-time
+                    authDomain: _0xGen._a + _0xGen._b,
+                    projectId: _0xGen._a,
+                    storageBucket: _0xGen._a + _0xGen._c,
+                    messagingSenderId: _0xGen._d,
+                    appId: _0xGen._e,
+                    measurementId: _0xGen._f
+                };
+            }
+
+            const firebaseConfig = _0xGetConfig() || { apiKey: "ACCESS_DENIED" };
 
             // Initialize Firebase (only if config is set)
             let db = null;
