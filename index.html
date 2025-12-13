@@ -1861,17 +1861,58 @@
             updateToggleButton();
 
             // Welcome Modal - show only on first visit
-            if (!localStorage.getItem('welcomeModalShown')) {
-                // Wait for Bootstrap to be fully loaded
-                window.addEventListener('load', () => {
-                    const welcomeModal = new bootstrap.Modal(document.getElementById('welcomeModal'));
+            // Wait for Bootstrap to be fully loaded
+            window.addEventListener('load', () => {
+                const welcomeModal = new bootstrap.Modal(document.getElementById('welcomeModal'));
+                const jescPromoShown = sessionStorage.getItem('jescPromoShown');
+
+                // Function to show JESC Promo
+                const showJescPromo = () => {
+                    if (!jescPromoShown) {
+                        const promoHtml = `
+                        <div class="modal fade" id="jescPromoModal" tabindex="-1" aria-hidden="true">
+                            <div class="modal-dialog modal-dialog-centered">
+                                <div class="modal-content text-center" style="background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%); color: white; border: 2px solid #ffcc00;">
+                                    <div class="modal-header border-0 justify-content-center">
+                                         <h5 class="modal-title w-100" style="font-weight: bold; font-size: 1.5rem;">🔥 JUNIOR EUROVISION 2025 🔥</h5>
+                                         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close" style="position: absolute; right: 15px; top: 15px;"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <div style="font-size: 3rem; margin-bottom: 10px;">🗳️</div>
+                                        <p style="font-size: 1.2rem;">The voting is OPEN!</p>
+                                        <p>Who is your winner? Who will win?</p>
+                                        <button id="promoVoteBtn" class="btn btn-warning btn-lg mt-3" style="font-weight: bold; color: black;">VOTE NOW</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>`;
+                        document.body.insertAdjacentHTML('beforeend', promoHtml);
+                        const jescPromoModal = new bootstrap.Modal(document.getElementById('jescPromoModal'));
+                        jescPromoModal.show();
+
+                        document.getElementById('promoVoteBtn').addEventListener('click', () => {
+                            jescPromoModal.hide();
+                            // Open the actual voting modal
+                            const jescVoteButton = document.getElementById('jescVoteButton');
+                            if (jescVoteButton) jescVoteButton.click();
+                        });
+
+                        sessionStorage.setItem('jescPromoShown', 'true');
+                    }
+                };
+
+                if (!localStorage.getItem('welcomeModalShown')) {
+                    // First time user: Show Welcome -> Then Promo
                     welcomeModal.show();
-                    // Mark as shown when user closes the modal
                     document.getElementById('welcomeModal').addEventListener('hidden.bs.modal', () => {
                         localStorage.setItem('welcomeModalShown', 'true');
+                        showJescPromo();
                     });
-                });
-            }
+                } else {
+                    // Recurring user: Show Promo directly
+                    showJescPromo();
+                }
+            });
 
             const chartContainer = document.createElement('div');
             chartContainer.id = 'chartContainer';
@@ -5889,6 +5930,31 @@
                             votes: firebase.firestore.FieldValue.increment(1)
                         }, { merge: true });
                         console.log(`${actionName} cast successfully!`);
+
+                        // Show Success Modal
+                        const successModalHtml = `
+                        <div class="modal fade" id="voteSuccessModal" tabindex="-1" aria-hidden="true">
+                            <div class="modal-dialog modal-dialog-centered">
+                                <div class="modal-content text-center">
+                                    <div class="modal-body p-4">
+                                        <div style="font-size: 3rem; margin-bottom: 10px;">🎉</div>
+                                        <h4 class="mb-3">Thank You!</h4>
+                                        <p class="mb-0">Your ${actionName} for <strong>${countryName}</strong> has been recorded.</p>
+                                    </div>
+                                    <div class="modal-footer justify-content-center">
+                                        <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Awesome!</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>`;
+
+                        document.body.insertAdjacentHTML('beforeend', successModalHtml);
+                        const successModal = new bootstrap.Modal(document.getElementById('voteSuccessModal'));
+                        successModal.show();
+                        document.getElementById('voteSuccessModal').addEventListener('hidden.bs.modal', function () {
+                            this.remove();
+                        });
+
                     } catch (error) {
                         console.error(`Error casting ${actionName}:`, error);
                         alert("There was an error saving online, but it's recorded locally.");
