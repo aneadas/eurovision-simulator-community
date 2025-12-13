@@ -1369,11 +1369,36 @@
                         aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <div id="jescVotingContent">
-                        <p class="text-center mb-4">Vote for your favorite Junior Eurovision 2025 song! You can only
-                            vote once.</p>
-                        <div id="jescParticipantsList" class="list-group">
-                            <!-- Participants will be loaded here -->
+                    <ul class="nav nav-tabs mb-3" id="jescVotingTabs" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" id="vote-tab" data-bs-toggle="tab"
+                                data-bs-target="#vote-content" type="button" role="tab">💖 Your Favorite</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="prediction-tab" data-bs-toggle="tab"
+                                data-bs-target="#prediction-content" type="button" role="tab">🔮 Prediction (Who will
+                                win?)</button>
+                        </li>
+                    </ul>
+                    <div class="tab-content" id="jescVotingTabContent">
+                        <!-- Vote Tab -->
+                        <div class="tab-pane fade show active" id="vote-content" role="tabpanel">
+                            <div id="jescVotingContent">
+                                <p class="text-center mb-4">Vote for your favorite Junior Eurovision 2025 song! You can
+                                    only vote once.</p>
+                                <div id="jescParticipantsList" class="list-group">
+                                    <!-- Participants will be loaded here -->
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Prediction Tab -->
+                        <div class="tab-pane fade" id="prediction-content" role="tabpanel">
+                            <div id="jescPredictionContent">
+                                <p class="text-center mb-4">Who do you THINK will win? Cast your prediction!</p>
+                                <div id="jescPredictionList" class="list-group">
+                                    <!-- Prediction list will be loaded here -->
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -1434,7 +1459,7 @@
             <div class="col-md-12">
                 <div class="card settings-card">
                     <div class="card-body">
-                        <h5>V.1.2.5</h5>
+                        <h5>V.1.2.6</h5>
                         <h2>Select Participating Countries and Set Odds<br> (11-50 countries semi-finals starting with
                             27, odds -> lower is better):</h2>
                         <h3 id="selectedCount" style="color: black;">Total Selected Countries: 0/50</h3>
@@ -4799,6 +4824,21 @@
 
                 </div>
                 <!--
+                    Latest version notes: 1.2.6 (by u/alexsemilos)
+                    In this release we add JESC 2025 Voting
+                -->
+                <h6>Version 1.2.6 (by u/alexsemilos) <span class="badge bg-primary">VOTING SPECIAL!</span></h6>
+                <ul>
+                    <li style="color:blue;"><strong>&lt;NEW FEATURE&gt; Junior Eurovision 2025 Voting:</strong> Vote for your favorite song from JESC 2025!
+                        <ul>
+                            <li><strong>Interactive Voting</strong> - Click the new "JESC 2025 VOTE" button to cast your vote.</li>
+                            <li><strong>Real-time Results</strong> - See live voting statistics powered by Firebase.</li>
+                            <li><strong>English Names</strong> - All country names are now in English for international consistency.</li>
+                            <li><strong>Secure Voting</strong> - One vote per user system.</li>
+                        </ul>
+                    </li>
+                </ul>
+                <!--
                     Latest version notes: 1.2.5 (by u/alexsemilos)
                     In this release we add Christmas decorations
                 -->
@@ -5717,18 +5757,27 @@
 
             const jescVoteButton = document.getElementById('jescVoteButton');
             const jescList = document.getElementById('jescParticipantsList');
+            const jescPredictionList = document.getElementById('jescPredictionList');
             let jescModal = null; // Lazy init
 
+            // Initialization
             jescVoteButton.addEventListener('click', async () => {
                 if (!jescModal) {
                     jescModal = new bootstrap.Modal(document.getElementById('jescVotingModal'));
+
+                    // Add tab change listener to load data when switching tabs
+                    document.getElementById('vote-tab').addEventListener('shown.bs.tab', () => loadJescData('vote'));
+                    document.getElementById('prediction-tab').addEventListener('shown.bs.tab', () => loadJescData('prediction'));
                 }
                 jescModal.show();
-                await loadJescVotes(); // Load results when opening
+                await loadJescData('vote'); // Load default tab
             });
 
-            async function loadJescVotes() {
-                jescList.innerHTML = '<div class="text-center"><div class="spinner-border text-primary" role="status"></div></div>';
+            async function loadJescData(type) {
+                const targetList = type === 'vote' ? jescList : jescPredictionList;
+                const collectionName = type === 'vote' ? 'jesc_2025_votes' : 'jesc_2025_predictions';
+
+                targetList.innerHTML = '<div class="text-center"><div class="spinner-border text-primary" role="status"></div></div>';
 
                 let votesData = {};
                 let totalVotes = 0;
@@ -5736,26 +5785,29 @@
                 // Fetch votes from Firebase if enabled
                 if (firebaseEnabled && db) {
                     try {
-                        const snapshot = await db.collection('jesc_2025_votes').get();
+                        const snapshot = await db.collection(collectionName).get();
                         snapshot.forEach(doc => {
                             votesData[doc.id] = doc.data().votes || 0;
                             totalVotes += doc.data().votes || 0;
                         });
                     } catch (error) {
-                        console.error("Error fetching JESC votes", error);
+                        console.error(`Error fetching JESC ${type} data`, error);
                     }
                 }
 
-                renderJescList(votesData, totalVotes);
+                renderJescList(votesData, totalVotes, type);
             }
 
-            function renderJescList(votesData, totalVotes) {
-                const hasVoted = localStorage.getItem('hasVotedJESC2025') === 'true';
-                jescList.innerHTML = '';
+            function renderJescList(votesData, totalVotes, type) {
+                const targetList = type === 'vote' ? jescList : jescPredictionList;
+                const storageKey = type === 'vote' ? 'hasVotedJESC2025' : 'hasPredictedJESC2025';
+                const hasActed = localStorage.getItem(storageKey) === 'true';
 
-                // If user has voted, sort by votes descending. If not, keep standard order (by running order)
+                targetList.innerHTML = '';
+
+                // If user has acted, sort by votes descending. If not, keep standard order
                 let sortedParticipants = [...jesc2025Participants];
-                if (hasVoted) {
+                if (hasActed) {
                     sortedParticipants.sort((a, b) => {
                         const votesA = votesData[a.code] || 0;
                         const votesB = votesData[b.code] || 0;
@@ -5771,19 +5823,23 @@
                     item.className = 'list-group-item d-flex justify-content-between align-items-center flex-wrap';
 
                     let actionHtml = '';
-                    if (hasVoted) {
+                    if (hasActed) {
+                        let badgeColor = type === 'vote' ? 'bg-primary' : 'bg-success'; // Blue for votes, Green for predictions
                         actionHtml = `
                             <div class="d-flex flex-column align-items-end" style="min-width: 100px;">
-                                <span class="badge bg-primary rounded-pill mb-1">${votes} votes</span>
+                                <span class="badge ${badgeColor} rounded-pill mb-1">${votes} votes</span>
                                 <small class="text-muted">${percent}%</small>
                             </div>
                          `;
-                        // Progress bar background for visual flair
-                        item.style.background = `linear-gradient(to right, rgba(230,240,255,1) ${percent}%, white ${percent}%)`;
+                        // Progress bar background
+                        let color = type === 'vote' ? '230,240,255' : '230,255,230';
+                        item.style.background = `linear-gradient(to right, rgba(${color},1) ${percent}%, white ${percent}%)`;
                     } else {
+                        let btnText = type === 'vote' ? 'Vote 🗳️' : 'Predict 🔮';
+                        let btnClass = type === 'vote' ? 'btn-outline-primary' : 'btn-outline-success';
                         actionHtml = `
-                            <button class="btn btn-outline-primary btn-sm vote-btn" data-code="${p.code}">
-                                Vote 🗳️
+                            <button class="btn ${btnClass} btn-sm action-btn" data-code="${p.code}" data-type="${type}">
+                                ${btnText}
                             </button>
                         `;
                     }
@@ -5792,54 +5848,56 @@
                         <div class="d-flex align-items-center">
                             <span class="flag-icon flag-icon-${p.code} me-3" style="font-size: 1.5em; margin-right: 15px;"></span>
                             <div>
-                                <h6 class="mb-0 fw-bold">${hasVoted ? `#${index + 1} ` : ''}${p.name}</h6>
+                                <h6 class="mb-0 fw-bold">${hasActed ? `#${index + 1} ` : ''}${p.name}</h6>
                                 <small class="text-muted">${p.artist} - "<em>${p.song}</em>"</small>
                             </div>
                         </div>
                         ${actionHtml}
                     `;
-                    jescList.appendChild(item);
+                    targetList.appendChild(item);
                 });
 
-                if (!hasVoted) {
-                    // Add event listeners to vote buttons
-                    document.querySelectorAll('.vote-btn').forEach(btn => {
-                        btn.addEventListener('click', (e) => castVote(e.target.dataset.code));
+                if (!hasActed) {
+                    targetList.querySelectorAll('.action-btn').forEach(btn => {
+                        btn.addEventListener('click', (e) => castAction(e.target.dataset.code, e.target.dataset.type));
                     });
                 }
             }
 
-            async function castVote(countryCode) {
-                if (!confirm(`Are you sure you want to vote for ${jesc2025Participants.find(c => c.code === countryCode).name}? You cannot change your vote.`)) {
+            async function castAction(countryCode, type) {
+                const countryName = jesc2025Participants.find(c => c.code === countryCode).name;
+                const actionName = type === 'vote' ? 'vote' : 'predict';
+                const collectionName = type === 'vote' ? 'jesc_2025_votes' : 'jesc_2025_predictions';
+                const storageKey = type === 'vote' ? 'hasVotedJESC2025' : 'hasPredictedJESC2025';
+
+                if (!confirm(`Are you sure you want to ${actionName} for ${countryName}? You cannot change this choice.`)) {
                     return;
                 }
 
-                if (localStorage.getItem('hasVotedJESC2025') === 'true') {
-                    alert("You have already voted!");
+                if (localStorage.getItem(storageKey) === 'true') {
+                    alert("You have already done this!");
                     return;
                 }
 
                 // Optimistic update
-                localStorage.setItem('hasVotedJESC2025', 'true');
+                localStorage.setItem(storageKey, 'true');
 
                 if (firebaseEnabled && db) {
                     try {
-                        const voteRef = db.collection('jesc_2025_votes').doc(countryCode);
-                        await voteRef.set({
+                        const docRef = db.collection(collectionName).doc(countryCode);
+                        await docRef.set({
                             votes: firebase.firestore.FieldValue.increment(1)
                         }, { merge: true });
-                        console.log("Vote cast successfully!");
+                        console.log(`${actionName} cast successfully!`);
                     } catch (error) {
-                        console.error("Error casting vote:", error);
-                        alert("There was an error saving your vote online, but it's recorded locally.");
+                        console.error(`Error casting ${actionName}:`, error);
+                        alert("There was an error saving online, but it's recorded locally.");
                     }
                 }
 
                 // Reload to show results
-                await loadJescVotes();
+                await loadJescData(type);
             }
         </script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.1.3/js/bootstrap.bundle.min.js"></script>
 </body>
-
-</html>
