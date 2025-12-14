@@ -7,11 +7,7 @@
     <title>Eurovision Song Contest Simulator with Semi-Finals and Dynamic Voting</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.1.3/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/3.5.0/css/flag-icon.min.css">
-    <!-- Firebase SDK -->
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-check-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-analytics-compat.js"></script>
+    <!-- Firebase SDK Removed - Using Vercel API Backend -->
     <style>
         :root {
             --main-background: linear-gradient(135deg, #1e5799 0%, #2989d8 50%, #207cca 51%, #7db9e8 100%);
@@ -2898,7 +2894,6 @@
             const addCSS = css => document.head.appendChild(document.createElement("style")).innerHTML = css;
 
             addCustomContestantButton.addEventListener('click', () => {
-                window.logAnalyticsEvent('add_custom_contestant');
                 var con_name = "";
                 if (document.getElementById('custom_name').value.replace(/\s/g, '') == "") {
                     con_name = String(Date.now()) + Math.floor(Math.random() * 10000)
@@ -3356,10 +3351,6 @@
 
 
                 const genreBonuses = calculateGenreBonus(selectedCountries);
-
-                window.logAnalyticsEvent('start_simulation', {
-                    country_count: selectedCountries.length
-                });
 
                 resultsDiv.innerHTML = '<div class="text-center my-4"><div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading...</span></div><p>Generating results...</p></div>';
 
@@ -5418,181 +5409,84 @@
             // Advent Calendar button click handler
             document.getElementById('adventCalendarButton').addEventListener('click', showAdventCalendar);
 
-            // ===== SECURITY PROTOCOL =====
-            // Unauthorized access to this section is strictly monitoring.
+            // ===== BACKEND CONFIGURATION =====
+            // Moved to /api/index.js for Vercel Serverless Functions
+            // No client-side credentials needed.
 
-            const _0xGen = {
-                _a: "eurovision-simulator",
-                _b: ".firebaseapp.com",
-                _c: ".firebasestorage.app",
-                _d: "619727891514",
-                _e: "1:619727891514:web:cb8e0ca1351cb7e0acd903",
-                _f: "G-DPX10D8Z9E"
-            };
-
-
-            const _0xPayload = [
-                "DL}dV|Gp6}]zQlif}Q9zhvEMQtvP<dD;05ORg:T",
-            ]; function _0xDecrypt(_s) {
-                let _r = "";
-                for (let i = 0; i < _s.length; i++) {
-                    _r += String.fromCharCode(_s.charCodeAt(i) - 3);
-                }
-                return _r;
-            }
-
-
-            function _0xGetConfig() {
-                const _h = window.location.hostname;
-
-
-                const _isSecure = _h.includes('github.io') || _h.includes('localhost') || _h.includes('127.0.0.1');
-
-                if (!_isSecure) {
-                    console.warn("⛔ SECURITY ALERT: Unauthorized Environment Detected. Countermeasures Active.");
-                    return null;
-                }
-
-                return {
-                    apiKey: _0xDecrypt(_0xPayload[0]), // Decrypts just-in-time
-                    authDomain: _0xGen._a + _0xGen._b,
-                    projectId: _0xGen._a,
-                    storageBucket: _0xGen._a + _0xGen._c,
-                    messagingSenderId: _0xGen._d,
-                    appId: _0xGen._e,
-                    measurementId: _0xGen._f
-                };
-            }
-
-            const firebaseConfig = _0xGetConfig() || { apiKey: "ACCESS_DENIED" };
-
-            // Initialize Firebase (only if config is set)
-            let db = null;
-            let analytics = null;
-            let firebaseEnabled = false;
-            const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-
-            // Helper to log events with console feedback
-            function logAnalyticsEvent(eventName, eventParams) {
-                if (analytics) {
-                    analytics.logEvent(eventName, eventParams);
-                    console.log(`📊 Analytics Event Sent: ${eventName}`, eventParams || '');
-                } else {
-                    console.log(`⚠️ Analytics not initialized. Event skipped: ${eventName}`);
-                }
-            }
-            window.logAnalyticsEvent = logAnalyticsEvent; // Expose globally
-
-            try {
-                if (firebaseConfig.apiKey && firebaseConfig.apiKey.startsWith("AIza")) {
-                    firebase.initializeApp(firebaseConfig);
-                    analytics = firebase.analytics();
-                    window.analytics = analytics; // Expose globally for debugging
-                    console.log('📊 Firebase Analytics initialized successfully');
-
-                    // Initialize App Check with reCAPTCHA v3 (only on production, not localhost)
-                    if (!isLocalhost) {
-                        const appCheck = firebase.appCheck();
-                        appCheck.activate('6Lei5igsAAAAACmnL1hacrM-bsA_SUyuM4nutnh-', true);
-                        console.log('🔒 App Check activated with reCAPTCHA v3');
-                    } else {
-                        console.log('⚠️ Localhost detected - App Check disabled for development');
-                    }
-
-                    db = firebase.firestore();
-                    firebaseEnabled = true;
-                    console.log('🔥 Firebase connected successfully!');
-                } else {
-                    console.log('⚠️ Firebase not configured. Leaderboard will show demo data.');
-                }
-            } catch (error) {
-                console.error('Firebase initialization error:', error);
-            }
 
             // Record a simulation win to Firebase with detailed stats
+            // Record a simulation win to Vercel API
             async function recordSimulationWin(winnerCountry, winnerCode, results, sortedCountries) {
-                if (!firebaseEnabled || !db) return;
+                // Prepare data
+                let juryWinnerCode = null;
+                let juryWinnerName = null;
+                let teleWinnerCode = null;
+                let teleWinnerName = null;
+                let lastPlaceCode = null;
+                let lastPlaceName = null;
 
-                window.logAnalyticsEvent('simulation_complete', {
-                    winner: winnerCountry,
-                    code: winnerCode
-                });
+                if (results && sortedCountries && sortedCountries.length > 0) {
+                    // Jury Winner
+                    let juryWinner = sortedCountries[0];
+                    let maxJury = -1;
+                    sortedCountries.forEach(c => {
+                        if (results[c].juryTotal > maxJury) {
+                            maxJury = results[c].juryTotal;
+                            juryWinner = c;
+                        }
+                    });
+                    juryWinnerName = juryWinner;
+                    juryWinnerCode = getCountryCode(juryWinner);
+
+                    // Televote Winner
+                    let teleWinner = sortedCountries[0];
+                    let maxTele = -1;
+                    sortedCountries.forEach(c => {
+                        if (results[c].teleTotal > maxTele) {
+                            maxTele = results[c].teleTotal;
+                            teleWinner = c;
+                        }
+                    });
+                    teleWinnerName = teleWinner;
+                    teleWinnerCode = getCountryCode(teleWinner);
+
+                    // Last Place
+                    const lastPlace = sortedCountries[sortedCountries.length - 1];
+                    lastPlaceName = lastPlace;
+                    lastPlaceCode = getCountryCode(lastPlace);
+                }
 
                 try {
-                    const batch = db.batch();
-
-                    // 1. Overall Winner
-                    const winnerRef = db.collection('leaderboard').doc(winnerCode);
-                    batch.set(winnerRef, {
-                        country: winnerCountry,
-                        code: winnerCode,
-                        wins: firebase.firestore.FieldValue.increment(1),
-                        lastWin: new Date().toISOString()
-                    }, { merge: true });
-
-                    // 2. Jury Winner (Calculate from results)
-                    if (results && sortedCountries) {
-                        let juryWinner = sortedCountries[0];
-                        let maxJury = -1;
-                        sortedCountries.forEach(c => {
-                            if (results[c].juryTotal > maxJury) {
-                                maxJury = results[c].juryTotal;
-                                juryWinner = c;
-                            }
-                        });
-                        const juryCode = getCountryCode(juryWinner);
-                        const juryRef = db.collection('leaderboard').doc(juryCode);
-                        batch.set(juryRef, {
-                            country: juryWinner,
-                            code: juryCode,
-                            juryWins: firebase.firestore.FieldValue.increment(1)
-                        }, { merge: true });
-
-                        // 3. Televote Winner
-                        let teleWinner = sortedCountries[0];
-                        let maxTele = -1;
-                        sortedCountries.forEach(c => {
-                            if (results[c].teleTotal > maxTele) {
-                                maxTele = results[c].teleTotal;
-                                teleWinner = c;
-                            }
-                        });
-                        const teleCode = getCountryCode(teleWinner);
-                        const teleRef = db.collection('leaderboard').doc(teleCode);
-                        batch.set(teleRef, {
-                            country: teleWinner,
-                            code: teleCode,
-                            teleWins: firebase.firestore.FieldValue.increment(1)
-                        }, { merge: true });
-
-                        // 4. Last Place (Wooden Spoon)
-                        const lastPlace = sortedCountries[sortedCountries.length - 1];
-                        const lastCode = getCountryCode(lastPlace);
-                        const lastRef = db.collection('leaderboard').doc(lastCode);
-                        batch.set(lastRef, {
-                            country: lastPlace,
-                            code: lastCode,
-                            lastPlaces: firebase.firestore.FieldValue.increment(1)
-                        }, { merge: true });
-                    }
-
-                    // 5. Total Simulations
-                    const statsRef = db.collection('leaderboard').doc('_stats');
-                    batch.set(statsRef, {
-                        totalSimulations: firebase.firestore.FieldValue.increment(1)
-                    }, { merge: true });
-
-                    await batch.commit();
-                    console.log(`🏆 Recorded detailed stats to Firebase`);
+                    await fetch('/api?action=recordWin', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            winnerCountry,
+                            winnerCode,
+                            juryWinnerCode, juryWinnerName,
+                            teleWinnerCode, teleWinnerName,
+                            lastPlaceCode, lastPlaceName,
+                            results, // Sending full results might be heavy, but useful for debugging or future expansion
+                            sortedCountries
+                        })
+                    });
+                    console.log(`🏆 Recorded detailed stats to Vercel Backend`);
                 } catch (error) {
                     console.error('Error recording win:', error);
                 }
             }
 
             // Fetch leaderboard data from Firebase
+            // Fetch leaderboard data from Vercel API
             async function fetchLeaderboardData() {
-                if (!firebaseEnabled || !db) {
-                    // Demo data
+                try {
+                    const response = await fetch('/api?action=getLeaderboard');
+                    if (!response.ok) throw new Error('API fetch failed');
+                    const data = await response.json();
+                    return { ...data, isDemo: false };
+                } catch (error) {
+                    console.error('Error fetching leaderboard:', error);
+                    // Fallback demo data
                     return {
                         countries: [
                             { country: 'Sweden', code: 'se', wins: 127, juryWins: 80, teleWins: 50, lastPlaces: 2 },
@@ -5605,33 +5499,10 @@
                         isDemo: true
                     };
                 }
-
-                try {
-                    // Fetch ALL countries (small dataset ~50 docs, one read per doc, acceptable for this scale)
-                    // This allows client-side sorting for all tabs without needing multiple indexes
-                    const snapshot = await db.collection('leaderboard').get();
-
-                    const countries = [];
-                    let totalSimulations = 0;
-
-                    snapshot.forEach(doc => {
-                        if (doc.id === '_stats') {
-                            totalSimulations = doc.data().totalSimulations || 0;
-                        } else {
-                            countries.push(doc.data());
-                        }
-                    });
-
-                    return { countries, totalSimulations, isDemo: false };
-                } catch (error) {
-                    console.error('Error fetching leaderboard:', error);
-                    return { countries: [], totalSimulations: 0, isDemo: false, error: true };
-                }
             }
 
             // Show Leaderboard Modal
             async function showLeaderboard() {
-                window.logAnalyticsEvent('view_leaderboard');
                 // Loading state
                 const loadingHTML = `
                 <div class="modal fade" id="leaderboardModal" tabindex="-1">
@@ -5803,24 +5674,20 @@
 
             async function loadJescData(type) {
                 const targetList = type === 'vote' ? jescList : jescPredictionList;
-                const collectionName = type === 'vote' ? 'jesc_2025_votes' : 'jesc_2025_predictions';
-
                 targetList.innerHTML = '<div class="text-center"><div class="spinner-border text-primary" role="status"></div></div>';
 
                 let votesData = {};
                 let totalVotes = 0;
 
-                // Fetch votes from Firebase if enabled
-                if (firebaseEnabled && db) {
-                    try {
-                        const snapshot = await db.collection(collectionName).get();
-                        snapshot.forEach(doc => {
-                            votesData[doc.id] = doc.data().votes || 0;
-                            totalVotes += doc.data().votes || 0;
-                        });
-                    } catch (error) {
-                        console.error(`Error fetching JESC ${type} data`, error);
+                try {
+                    const response = await fetch(`/api?action=getJescData&type=${type}`);
+                    if (response.ok) {
+                        const data = await response.json();
+                        votesData = data.votesData || {};
+                        totalVotes = data.totalVotes || 0;
                     }
+                } catch (error) {
+                    console.error(`Error fetching JESC ${type} data`, error);
                 }
 
                 renderJescList(votesData, totalVotes, type);
@@ -5893,7 +5760,6 @@
             async function castAction(countryCode, type) {
                 const countryName = jesc2025Participants.find(c => c.code === countryCode).name;
                 const actionName = type === 'vote' ? 'vote' : 'predict';
-                const collectionName = type === 'vote' ? 'jesc_2025_votes' : 'jesc_2025_predictions';
                 const storageKey = type === 'vote' ? 'hasVotedJESC2025' : 'hasPredictedJESC2025';
 
                 if (!confirm(`Are you sure you want to ${actionName} for ${countryName}? You cannot change this choice.`)) {
@@ -5908,42 +5774,44 @@
                 // Optimistic update
                 localStorage.setItem(storageKey, 'true');
 
-                if (firebaseEnabled && db) {
-                    try {
-                        const docRef = db.collection(collectionName).doc(countryCode);
-                        await docRef.set({
-                            votes: firebase.firestore.FieldValue.increment(1)
-                        }, { merge: true });
-                        console.log(`${actionName} cast successfully!`);
+                try {
+                    const response = await fetch('/api?action=castJescVote', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ countryCode, type })
+                    });
 
-                        // Show Success Modal
-                        const successModalHtml = `
-                        <div class="modal fade" id="voteSuccessModal" tabindex="-1" aria-hidden="true">
-                            <div class="modal-dialog modal-dialog-centered">
-                                <div class="modal-content text-center">
-                                    <div class="modal-body p-4">
-                                        <div style="font-size: 3rem; margin-bottom: 10px;">🎉</div>
-                                        <h4 class="mb-3">Thank You!</h4>
-                                        <p class="mb-0">Your ${actionName} for <strong>${countryName}</strong> has been recorded.</p>
-                                    </div>
-                                    <div class="modal-footer justify-content-center">
-                                        <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Awesome!</button>
-                                    </div>
+                    if (!response.ok) throw new Error('API Error');
+
+                    console.log(`${actionName} cast successfully!`);
+
+                    // Show Success Modal
+                    const successModalHtml = `
+                    <div class="modal fade" id="voteSuccessModal" tabindex="-1" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered">
+                            <div class="modal-content text-center">
+                                <div class="modal-body p-4">
+                                    <div style="font-size: 3rem; margin-bottom: 10px;">🎉</div>
+                                    <h4 class="mb-3">Thank You!</h4>
+                                    <p class="mb-0">Your ${actionName} for <strong>${countryName}</strong> has been recorded.</p>
+                                </div>
+                                <div class="modal-footer justify-content-center">
+                                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Awesome!</button>
                                 </div>
                             </div>
-                        </div>`;
+                        </div>
+                    </div>`;
 
-                        document.body.insertAdjacentHTML('beforeend', successModalHtml);
-                        const successModal = new bootstrap.Modal(document.getElementById('voteSuccessModal'));
-                        successModal.show();
-                        document.getElementById('voteSuccessModal').addEventListener('hidden.bs.modal', function () {
-                            this.remove();
-                        });
+                    document.body.insertAdjacentHTML('beforeend', successModalHtml);
+                    const successModal = new bootstrap.Modal(document.getElementById('voteSuccessModal'));
+                    successModal.show();
+                    document.getElementById('voteSuccessModal').addEventListener('hidden.bs.modal', function () {
+                        this.remove();
+                    });
 
-                    } catch (error) {
-                        console.error(`Error casting ${actionName}:`, error);
-                        alert("There was an error saving online, but it's recorded locally.");
-                    }
+                } catch (error) {
+                    console.error(`Error casting ${actionName}:`, error);
+                    alert("There was an error saving online. Please try again.");
                 }
 
                 // Reload to show results
