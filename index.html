@@ -11,6 +11,7 @@
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-check-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-analytics-compat.js"></script>
     <style>
         :root {
             --main-background: linear-gradient(135deg, #1e5799 0%, #2989d8 50%, #207cca 51%, #7db9e8 100%);
@@ -1427,8 +1428,8 @@
                         <button id="adventCalendarButton" class="btn btn-success mb-2">📅 ADVENT CALENDAR</button>
                         <button id="leaderboardButton" class="btn btn-warning mb-2">🏆 LEADERBOARD</button>
                         <button id="jescVoteButton" class="btn btn-primary mb-2"
-                            style="background: linear-gradient(45deg, #ff00cc, #3333ff); border: none;">🗳️ JESC 2025
-                            VOTE</button>
+                            style="background: linear-gradient(45deg, #FFD700, #FF8C00); border: none; color: black; font-weight: bold;">🏆
+                            JESC 2025 WINNER</button>
                         <button id="instructionsButton" class="btn btn-info mb-2">INSTRUCTIONS</button>
                         <button id="whatsNewButton" class="btn btn-warning mb-2">WHAT'S NEW?</button>
                         <button id="generateButton" class="btn btn-warning mb-2">GENERATE</button>
@@ -1866,51 +1867,12 @@
                 const welcomeModal = new bootstrap.Modal(document.getElementById('welcomeModal'));
                 const jescPromoShown = sessionStorage.getItem('jescPromoShown');
 
-                // Function to show JESC Promo
-                const showJescPromo = () => {
-                    if (!jescPromoShown) {
-                        const promoHtml = `
-                        <div class="modal fade" id="jescPromoModal" tabindex="-1" aria-hidden="true">
-                            <div class="modal-dialog modal-dialog-centered">
-                                <div class="modal-content text-center" style="background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%); color: white; border: 2px solid #ffcc00;">
-                                    <div class="modal-header border-0 justify-content-center">
-                                         <h5 class="modal-title w-100" style="font-weight: bold; font-size: 1.5rem;">🔥 JUNIOR EUROVISION 2025 🔥</h5>
-                                         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close" style="position: absolute; right: 15px; top: 15px;"></button>
-                                    </div>
-                                    <div class="modal-body">
-                                        <div style="font-size: 3rem; margin-bottom: 10px;">🗳️</div>
-                                        <p style="font-size: 1.2rem;">The voting is OPEN!</p>
-                                        <p>Who is your winner? Who will win?</p>
-                                        <button id="promoVoteBtn" class="btn btn-warning btn-lg mt-3" style="font-weight: bold; color: black;">VOTE NOW</button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>`;
-                        document.body.insertAdjacentHTML('beforeend', promoHtml);
-                        const jescPromoModal = new bootstrap.Modal(document.getElementById('jescPromoModal'));
-                        jescPromoModal.show();
-
-                        document.getElementById('promoVoteBtn').addEventListener('click', () => {
-                            jescPromoModal.hide();
-                            // Open the actual voting modal
-                            const jescVoteButton = document.getElementById('jescVoteButton');
-                            if (jescVoteButton) jescVoteButton.click();
-                        });
-
-                        sessionStorage.setItem('jescPromoShown', 'true');
-                    }
-                };
-
                 if (!localStorage.getItem('welcomeModalShown')) {
-                    // First time user: Show Welcome -> Then Promo
+                    // First time user: Show Welcome
                     welcomeModal.show();
                     document.getElementById('welcomeModal').addEventListener('hidden.bs.modal', () => {
                         localStorage.setItem('welcomeModalShown', 'true');
-                        showJescPromo();
                     });
-                } else {
-                    // Recurring user: Show Promo directly
-                    showJescPromo();
                 }
             });
 
@@ -2936,6 +2898,7 @@
             const addCSS = css => document.head.appendChild(document.createElement("style")).innerHTML = css;
 
             addCustomContestantButton.addEventListener('click', () => {
+                if (analytics) analytics.logEvent('add_custom_contestant');
                 var con_name = "";
                 if (document.getElementById('custom_name').value.replace(/\s/g, '') == "") {
                     con_name = String(Date.now()) + Math.floor(Math.random() * 10000)
@@ -3393,6 +3356,12 @@
 
 
                 const genreBonuses = calculateGenreBonus(selectedCountries);
+
+                if (analytics) {
+                    analytics.logEvent('start_simulation', {
+                        country_count: selectedCountries.length
+                    });
+                }
 
                 resultsDiv.innerHTML = '<div class="text-center my-4"><div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading...</span></div><p>Generating results...</p></div>';
 
@@ -4874,7 +4843,6 @@
                         <ul>
                             <li><strong>Interactive Voting</strong> - Click the new "JESC 2025 VOTE" button to cast your vote.</li>
                             <li><strong>Real-time Results</strong> - See live voting statistics powered by Firebase.</li>
-                            <li><strong>English Names</strong> - All country names are now in English for international consistency.</li>
                             <li><strong>Secure Voting</strong> - One vote per user system.</li>
                         </ul>
                     </li>
@@ -5502,12 +5470,15 @@
 
             // Initialize Firebase (only if config is set)
             let db = null;
+            let analytics = null; // Analytics instance
             let firebaseEnabled = false;
             const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
 
             try {
                 if (firebaseConfig.apiKey && firebaseConfig.apiKey.startsWith("AIza")) {
                     firebase.initializeApp(firebaseConfig);
+                    analytics = firebase.analytics();
+                    console.log('📊 Firebase Analytics initialized');
 
                     // Initialize App Check with reCAPTCHA v3 (only on production, not localhost)
                     if (!isLocalhost) {
@@ -5531,6 +5502,13 @@
             // Record a simulation win to Firebase with detailed stats
             async function recordSimulationWin(winnerCountry, winnerCode, results, sortedCountries) {
                 if (!firebaseEnabled || !db) return;
+
+                if (analytics) {
+                    analytics.logEvent('simulation_complete', {
+                        winner: winnerCountry,
+                        code: winnerCode
+                    });
+                }
 
                 try {
                     const batch = db.batch();
@@ -5645,6 +5623,7 @@
 
             // Show Leaderboard Modal
             async function showLeaderboard() {
+                if (analytics) analytics.logEvent('view_leaderboard');
                 // Loading state
                 const loadingHTML = `
                 <div class="modal fade" id="leaderboardModal" tabindex="-1">
@@ -5841,20 +5820,32 @@
 
             function renderJescList(votesData, totalVotes, type) {
                 const targetList = type === 'vote' ? jescList : jescPredictionList;
-                const storageKey = type === 'vote' ? 'hasVotedJESC2025' : 'hasPredictedJESC2025';
-                const hasActed = localStorage.getItem(storageKey) === 'true';
+                // Voting Closed - ignore local storage state for UI, always show results
 
                 targetList.innerHTML = '';
 
-                // If user has acted, sort by votes descending. If not, keep standard order
-                let sortedParticipants = [...jesc2025Participants];
-                if (hasActed) {
-                    sortedParticipants.sort((a, b) => {
-                        const votesA = votesData[a.code] || 0;
-                        const votesB = votesData[b.code] || 0;
-                        return votesB - votesA;
-                    });
+                // Show Winner Header
+                if (type === 'vote') {
+                    const winnerHtml = `
+                        <div class="text-center mb-4 p-3" style="background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%); border-radius: 15px; color: black; box-shadow: 0 4px 15px rgba(0,0,0,0.2);">
+                            <h2 style="font-weight: 900; margin-bottom: 5px;">🏆 WINNER 🏆</h2>
+                            <h3 style="font-size: 2.5em; margin: 10px 0;">🇫🇷 FRANCE</h3>
+                            <h5 style="font-weight: normal;">Lou Deleuze - "Ce monde"</h5>
+                        </div>
+                        <h5 class="text-center mb-3">Full Results (Voting Closed)</h5>
+                    `;
+                    targetList.insertAdjacentHTML('beforeend', winnerHtml);
+                } else {
+                    targetList.insertAdjacentHTML('beforeend', '<h5 class="text-center mb-3">Prediction Results (Voting Closed)</h5>');
                 }
+
+                // Always sort by votes descending
+                let sortedParticipants = [...jesc2025Participants];
+                sortedParticipants.sort((a, b) => {
+                    const votesA = votesData[a.code] || 0;
+                    const votesB = votesData[b.code] || 0;
+                    return votesB - votesA;
+                });
 
                 sortedParticipants.forEach((p, index) => {
                     const votes = votesData[p.code] || 0;
@@ -5863,33 +5854,23 @@
                     const item = document.createElement('div');
                     item.className = 'list-group-item d-flex justify-content-between align-items-center flex-wrap';
 
-                    let actionHtml = '';
-                    if (hasActed) {
-                        let badgeColor = type === 'vote' ? 'bg-primary' : 'bg-success'; // Blue for votes, Green for predictions
-                        actionHtml = `
-                            <div class="d-flex flex-column align-items-end" style="min-width: 100px;">
-                                <span class="badge ${badgeColor} rounded-pill mb-1">${votes} votes</span>
-                                <small class="text-muted">${percent}%</small>
-                            </div>
-                         `;
-                        // Progress bar background
-                        let color = type === 'vote' ? '230,240,255' : '230,255,230';
-                        item.style.background = `linear-gradient(to right, rgba(${color},1) ${percent}%, white ${percent}%)`;
-                    } else {
-                        let btnText = type === 'vote' ? 'Vote 🗳️' : 'Predict 🔮';
-                        let btnClass = type === 'vote' ? 'btn-outline-primary' : 'btn-outline-success';
-                        actionHtml = `
-                            <button class="btn ${btnClass} btn-sm action-btn" data-code="${p.code}" data-type="${type}">
-                                ${btnText}
-                            </button>
-                        `;
-                    }
+                    // Always show results UI
+                    let badgeColor = type === 'vote' ? 'bg-primary' : 'bg-success';
+                    let actionHtml = `
+                        <div class="d-flex flex-column align-items-end" style="min-width: 100px;">
+                            <span class="badge ${badgeColor} rounded-pill mb-1">${votes} votes</span>
+                            <small class="text-muted">${percent}%</small>
+                        </div>
+                     `;
+                    // Progress bar background
+                    let color = type === 'vote' ? '230,240,255' : '230,255,230';
+                    item.style.background = `linear-gradient(to right, rgba(${color},1) ${percent}%, white ${percent}%)`;
 
                     item.innerHTML = `
                         <div class="d-flex align-items-center">
                             <span class="flag-icon flag-icon-${p.code} me-3" style="font-size: 1.5em; margin-right: 15px;"></span>
                             <div>
-                                <h6 class="mb-0 fw-bold">${hasActed ? `#${index + 1} ` : ''}${p.name}</h6>
+                                <h6 class="mb-0 fw-bold">#${index + 1} ${p.name}</h6>
                                 <small class="text-muted">${p.artist} - "<em>${p.song}</em>"</small>
                             </div>
                         </div>
@@ -5898,11 +5879,7 @@
                     targetList.appendChild(item);
                 });
 
-                if (!hasActed) {
-                    targetList.querySelectorAll('.action-btn').forEach(btn => {
-                        btn.addEventListener('click', (e) => castAction(e.target.dataset.code, e.target.dataset.type));
-                    });
-                }
+                // No event listeners needed as there are no buttons
             }
 
             async function castAction(countryCode, type) {
