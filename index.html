@@ -2898,7 +2898,7 @@
             const addCSS = css => document.head.appendChild(document.createElement("style")).innerHTML = css;
 
             addCustomContestantButton.addEventListener('click', () => {
-                if (analytics) analytics.logEvent('add_custom_contestant');
+                window.logAnalyticsEvent('add_custom_contestant');
                 var con_name = "";
                 if (document.getElementById('custom_name').value.replace(/\s/g, '') == "") {
                     con_name = String(Date.now()) + Math.floor(Math.random() * 10000)
@@ -3357,11 +3357,9 @@
 
                 const genreBonuses = calculateGenreBonus(selectedCountries);
 
-                if (analytics) {
-                    analytics.logEvent('start_simulation', {
-                        country_count: selectedCountries.length
-                    });
-                }
+                window.logAnalyticsEvent('start_simulation', {
+                    country_count: selectedCountries.length
+                });
 
                 resultsDiv.innerHTML = '<div class="text-center my-4"><div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading...</span></div><p>Generating results...</p></div>';
 
@@ -5470,15 +5468,27 @@
 
             // Initialize Firebase (only if config is set)
             let db = null;
-            let analytics = null; // Analytics instance
+            let analytics = null;
             let firebaseEnabled = false;
             const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+
+            // Helper to log events with console feedback
+            function logAnalyticsEvent(eventName, eventParams) {
+                if (analytics) {
+                    analytics.logEvent(eventName, eventParams);
+                    console.log(`📊 Analytics Event Sent: ${eventName}`, eventParams || '');
+                } else {
+                    console.log(`⚠️ Analytics not initialized. Event skipped: ${eventName}`);
+                }
+            }
+            window.logAnalyticsEvent = logAnalyticsEvent; // Expose globally
 
             try {
                 if (firebaseConfig.apiKey && firebaseConfig.apiKey.startsWith("AIza")) {
                     firebase.initializeApp(firebaseConfig);
                     analytics = firebase.analytics();
-                    console.log('📊 Firebase Analytics initialized');
+                    window.analytics = analytics; // Expose globally for debugging
+                    console.log('📊 Firebase Analytics initialized successfully');
 
                     // Initialize App Check with reCAPTCHA v3 (only on production, not localhost)
                     if (!isLocalhost) {
@@ -5503,12 +5513,10 @@
             async function recordSimulationWin(winnerCountry, winnerCode, results, sortedCountries) {
                 if (!firebaseEnabled || !db) return;
 
-                if (analytics) {
-                    analytics.logEvent('simulation_complete', {
-                        winner: winnerCountry,
-                        code: winnerCode
-                    });
-                }
+                window.logAnalyticsEvent('simulation_complete', {
+                    winner: winnerCountry,
+                    code: winnerCode
+                });
 
                 try {
                     const batch = db.batch();
@@ -5623,7 +5631,7 @@
 
             // Show Leaderboard Modal
             async function showLeaderboard() {
-                if (analytics) analytics.logEvent('view_leaderboard');
+                window.logAnalyticsEvent('view_leaderboard');
                 // Loading state
                 const loadingHTML = `
                 <div class="modal fade" id="leaderboardModal" tabindex="-1">
