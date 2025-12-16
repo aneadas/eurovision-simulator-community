@@ -1626,7 +1626,7 @@
             <div class="col-md-12">
                 <div class="card settings-card">
                     <div class="card-body">
-                        <h5>V.1.2.6</h5>
+                        <h5>V.1.2.7</h5>
                         <h2>Select Participating Countries and Set Odds<br> (11-50 countries semi-finals starting with
                             27, odds -> lower is better):</h2>
                         <h3 id="selectedCount" style="color: black;">Total Selected Countries: 0/50</h3>
@@ -4994,16 +4994,26 @@
                 </div>
                 <!--
                     Latest version notes: 1.2.7 (by u/alexsemilos)
-                    In this release we add Google Login, User Leaderboard, and Badges
+                    In this release we added Google Login, User Profiles, and Advanced Customization
                 -->
-                <h6>Version 1.2.7 (by u/alexsemilos) <span class="badge bg-primary">USER PROFILE UPDATE!</span></h6>
+                <h6>Version 1.2.7 (by u/alexsemilos) <span class="badge bg-primary">PROFILE SPECIAL!</span></h6>
                 <ul>
-                    <li style="color:blue;"><strong>&lt;NEW FEATURE&gt; Google Login & User Profiles:</strong>
+                    <li style="color:blue;"><strong>&lt;NEW FEATURE&gt; Enhanced User Profile:</strong>
                         <ul>
-                            <li><strong>Google Sign-In</strong> - Log in securely with your Google account.</li>
-                            <li><strong>Nicknames</strong> - Choose a unique nickname to represent yourself on the leaderboard. Your email remains private!</li>
-                            <li><strong>User Leaderboard</strong> - Compete to see who runs the most simulations! Track your rank against other users.</li>
-                            <li><strong>Role Badges</strong> - Special badges for Admins (Red) and Developers (Blue) on the leaderboards.</li>
+                            <li><strong>My Profile Button</strong> - Easily access your profile from the main menu.</li>
+                            <li><strong>Drag & Drop Country Selector</strong> - Choose your Favorite Country from <strong>ALL countries in the world</strong> using a new drag-and-drop interface!</li>
+                            <li><strong>Flags on Profile</strong> - Your favorite country now appears with its official flag on your profile.</li>
+                            <li><strong>📍 Location</strong> - Add your City and Country to show where you are simulating from.</li>
+                            <li><strong>🔗 Social Handle</strong> - Add your social media handle (e.g. @username) to connect with others.</li>
+                            <li><strong>New Tags</strong> - Dozens of new tags added! (e.g., "Wind Machine Enthusiast", "Chaos Agent", "Robbed Queen Support").</li>
+                            <li><strong>Privacy Mode</strong> - Option to make your profile private (hides stats from leaderboard).</li>
+                        </ul>
+                    </li>
+                    <li style="color:blue;"><strong>&lt;NEW FEATURE&gt; Google Login & Leaderboard:</strong>
+                         <ul>
+                            <li><strong>Google Sign-In</strong> - Log in safely.</li>
+                            <li><strong>User Leaderboard</strong> - Compete for most simulations!</li>
+                            <li><strong>Role Badges</strong> - Admin/Dev badges for special users.</li>
                         </ul>
                     </li>
                 </ul>
@@ -5847,7 +5857,8 @@
                 countries.sort((a, b) => (b[sortBy] || 0) - (a[sortBy] || 0));
 
                 // Slice top 20
-                const topCountries = countries.slice(0, 20);
+                // Show all countries
+                const topCountries = countries;
 
                 let tableRows = '';
                 topCountries.forEach((country, index) => {
