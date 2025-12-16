@@ -1500,45 +1500,47 @@
                                 <textarea class="form-control form-control-sm" id="editBio" rows="2" maxlength="100"
                                     placeholder="Tell us about yourself..."></textarea>
                             </div>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label small">Favorite Country (Drag & Drop)</label>
-                            <div id="favCountryDropZone"
-                                class="border p-2 mb-2 text-center d-flex align-items-center justify-content-center"
-                                style="min-height: 50px; background: #f8f9fa; border-style: dashed !important; border-radius: 6px;">
-                                <span class="text-muted small">Drag your favorite country here</span>
+                            <!-- REMOVED PREMATURE CLOSING DIV -->
+
+                            <div class="mb-3">
+                                <label class="form-label small">Favorite Country (Drag & Drop)</label>
+                                <div id="favCountryDropZone"
+                                    class="border p-2 mb-2 text-center d-flex align-items-center justify-content-center"
+                                    style="min-height: 50px; background: #f8f9fa; border-style: dashed !important; border-radius: 6px;">
+                                    <span class="text-muted small">Drag your favorite country here</span>
+                                </div>
+                                <input type="text" id="favCountrySearch" class="form-control form-control-sm mb-2"
+                                    placeholder="Search countries..." onkeyup="filterCountries()">
+                                <div id="favCountrySource" class="d-flex flex-wrap gap-2"
+                                    style="max-height: 150px; overflow-y: auto; border: 1px solid #dee2e6; padding: 5px; border-radius: 4px; background: #fff;">
+                                    <!-- Countries injected by JS -->
+                                </div>
+                                <input type="hidden" id="editFavCountryCode">
+                                <input type="hidden" id="editFavCountryName">
                             </div>
-                            <input type="text" id="favCountrySearch" class="form-control form-control-sm mb-2"
-                                placeholder="Search countries..." onkeyup="filterCountries()">
-                            <div id="favCountrySource" class="d-flex flex-wrap gap-2"
-                                style="max-height: 150px; overflow-y: auto; border: 1px solid #dee2e6; padding: 5px; border-radius: 4px; background: #fff;">
-                                <!-- Countries injected by JS -->
+                            <div class="mb-3">
+                                <label class="form-label small">Location</label>
+                                <input type="text" class="form-control form-control-sm" id="editLocation"
+                                    placeholder="City, Country">
                             </div>
-                            <input type="hidden" id="editFavCountryCode">
-                            <input type="hidden" id="editFavCountryName">
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label small">Location</label>
-                            <input type="text" class="form-control form-control-sm" id="editLocation"
-                                placeholder="City, Country">
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label small">Social Handle (e.g. @username)</label>
-                            <input type="text" class="form-control form-control-sm" id="editSocial"
-                                placeholder="@username">
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label small">Tags</label>
-                            <div class="d-flex flex-wrap gap-2" id="editTagsContainer">
-                                <!-- Tags injected by JS -->
+                            <div class="mb-3">
+                                <label class="form-label small">Social Handle (e.g. @username)</label>
+                                <input type="text" class="form-control form-control-sm" id="editSocial"
+                                    placeholder="@username">
                             </div>
-                        </div>
-                        <div class="form-check form-switch mb-3">
-                            <input class="form-check-input" type="checkbox" id="privacyToggle">
-                            <label class="form-check-label small" for="privacyToggle">Private Profile (Hide stats
-                                from leaderboard)</label>
-                        </div>
-                        <button id="saveProfileButton" class="btn btn-primary btn-sm w-100">Save Changes</button>
+                            <div class="mb-3">
+                                <label class="form-label small">Tags</label>
+                                <div class="d-flex flex-wrap gap-2" id="editTagsContainer">
+                                    <!-- Tags injected by JS -->
+                                </div>
+                            </div>
+                            <div class="form-check form-switch mb-3">
+                                <input class="form-check-input" type="checkbox" id="privacyToggle">
+                                <label class="form-check-label small" for="privacyToggle">Private Profile (Hide stats
+                                    from leaderboard)</label>
+                            </div>
+                            <button id="saveProfileButton" class="btn btn-primary btn-sm w-100">Save Changes</button>
+                        </div> <!-- NOW CLOSING DIV HERE -->
                     </div>
                 </div>
             </div>
