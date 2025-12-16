@@ -1296,6 +1296,31 @@
 </head>
 
 <body>
+    <style>
+        /* ... existing styles ... */
+        .badge-role {
+            font-size: 0.8em;
+            padding: 2px 6px;
+            border-radius: 4px;
+            margin-left: 5px;
+            text-transform: uppercase;
+            font-weight: bold;
+            display: inline-block;
+            vertical-align: middle;
+        }
+
+        .badge-admin {
+            background-color: #dc3545;
+            color: white;
+            border: 1px solid #b02a37;
+        }
+
+        .badge-dev {
+            background-color: #0d6efd;
+            color: white;
+            border: 1px solid #0a58ca;
+        }
+    </style>
     <!-- Christmas Lights -->
     <div class="christmas-lights">
         <div class="lights-wire"></div>
@@ -5849,7 +5874,7 @@
                                 users.push({
                                     nickname: data.nickname,
                                     simulations: data.simulations || 0,
-                                    photoURL: data.photoURL // Reserved for future
+                                    role: data.role || null
                                 });
                             }
                         });
@@ -5884,11 +5909,18 @@
                     else if (index === 1) { rankClass = 'silver'; rankDisplay = '🥈'; }
                     else if (index === 2) { rankClass = 'bronze'; rankDisplay = '🥉'; }
 
+                    let badgeHtml = '';
+                    if (user.role === 'admin') {
+                        badgeHtml = '<span class="badge-role badge-admin">ADMIN</span>';
+                    } else if (user.role === 'dev') {
+                        badgeHtml = '<span class="badge-role badge-dev">DEV</span>';
+                    }
+
                     tableRows += `
                         <tr>
                             <td class="leaderboard-rank ${rankClass}">${rankDisplay}</td>
                             <td style="font-weight: bold;">
-                                ${user.nickname}
+                                ${user.nickname} ${badgeHtml}
                             </td>
                             <td style="font-weight: bold; color: #6f42c1;">${user.simulations}</td>
                         </tr>
