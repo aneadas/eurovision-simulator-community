@@ -6225,6 +6225,128 @@
                 // Reload to show results
                 await loadJescData(type);
             }
+
+            const AVAILABLE_TAGS = ["Eurofan", "Statistician", "Jury Member", "Televoter", "Artist", "Historian", "Predictor", "Casual"];
+
+            async function openProfileModal(targetUid) {
+                const modalEl = document.getElementById('profileModal');
+                const modal = new bootstrap.Modal(modalEl);
+                modal.show();
+
+                const loading = document.getElementById('profileLoading');
+                const content = document.getElementById('profileContent');
+                const editControls = document.getElementById('editProfileControls');
+
+                loading.style.display = 'block';
+                content.style.display = 'none';
+                editControls.style.display = 'none';
+
+                const currentUser = firebase.auth().currentUser;
+                const isOwner = currentUser && currentUser.uid === targetUid;
+
+                if (firebaseEnabled && db) {
+                    try {
+                        const doc = await db.collection('users').doc(targetUid).get();
+                        if (!doc.exists) {
+                            alert("User not found");
+                            modal.hide();
+                            return;
+                        }
+                        const data = doc.data();
+                        const isPrivate = data.isPrivate && !isOwner;
+
+                        // Populate View
+                        document.getElementById('profileNickname').textContent = data.nickname || "Unknown";
+                        document.getElementById('profileImage').src = data.avatarUrl || data.photoURL || 'https://via.placeholder.com/100';
+                        document.getElementById('profileBio').textContent = data.bio || (isOwner ? "No bio yet." : "");
+                        document.getElementById('profileSimulations').textContent = isPrivate ? "🔒" : (data.simulations || 0);
+                        document.getElementById('profileJoinDate').textContent = data.createdAt ? new Date(data.createdAt.toDate()).toLocaleDateString() : "-";
+
+                        // Badges
+                        let badgesHtml = '';
+                        if (data.role === 'admin') badgesHtml += '<span class="badge-role badge-admin">ADMIN</span>';
+                        if (data.role === 'dev') badgesHtml += '<span class="badge-role badge-dev">DEV</span>';
+                        document.getElementById('profileBadges').innerHTML = badgesHtml;
+
+                        // Tags
+                        const tagsContainer = document.getElementById('profileTags');
+                        tagsContainer.innerHTML = '';
+                        if (data.tags && Array.isArray(data.tags)) {
+                            data.tags.forEach(tag => {
+                                tagsContainer.innerHTML += `<span class="badge bg-secondary rounded-pill">${tag}</span>`;
+                            });
+                        }
+
+                        // Owner Logic
+                        if (isOwner) {
+                            editControls.style.display = 'block';
+                            document.getElementById('editAvatarUrl').value = data.avatarUrl || "";
+                            document.getElementById('editBio').value = data.bio || "";
+                            document.getElementById('privacyToggle').checked = data.isPrivate || false;
+
+                            // Render Tag Selection
+                            const editTagsContainer = document.getElementById('editTagsContainer');
+                            editTagsContainer.innerHTML = '';
+                            AVAILABLE_TAGS.forEach(tag => {
+                                const isSelected = data.tags && data.tags.includes(tag);
+                                const btnClass = isSelected ? 'btn-primary' : 'btn-outline-secondary';
+                                editTagsContainer.innerHTML += `
+                                    <button class="btn btn-sm ${btnClass} tag-select-btn" data-tag="${tag}" onclick="toggleTag(this)">${tag}</button>
+                                `;
+                            });
+
+                            // Save Handler
+                            document.getElementById('saveProfileButton').onclick = async () => {
+                                const newAvatar = document.getElementById('editAvatarUrl').value.trim();
+                                const newBio = document.getElementById('editBio').value.trim();
+                                const isPrivate = document.getElementById('privacyToggle').checked;
+
+                                // Collect tags
+                                const selectedTags = [];
+                                document.querySelectorAll('.tag-select-btn.btn-primary').forEach(btn => selectedTags.push(btn.dataset.tag));
+
+                                try {
+                                    await db.collection('users').doc(currentUser.uid).update({
+                                        avatarUrl: newAvatar,
+                                        bio: newBio,
+                                        isPrivate: isPrivate,
+                                        tags: selectedTags
+                                    });
+                                    modal.hide();
+                                    if (document.getElementById('userLeaderboardModal').classList.contains('show')) {
+                                        // Refresh leaderboard if open - accessing the function if global or attached to window
+                                        // Note: showUserLeaderboard is defined inside DOMContentLoaded. 
+                                        // To make it accessible, we might need to expose it or close/reopen.
+                                        // For now, let's just close the profile modal.
+                                    }
+                                } catch (e) {
+                                    console.error(e);
+                                    alert("Error saving profile");
+                                }
+                            };
+                        } else {
+                            if (isPrivate) {
+                                document.getElementById('profileBio').textContent = "This profile is private.";
+                                document.getElementById('profileTags').innerHTML = '';
+                            }
+                        }
+
+                        loading.style.display = 'none';
+                        content.style.display = 'block';
+
+                    } catch (e) {
+                        console.error(e);
+                        alert("Error loading profile");
+                        modal.hide();
+                    }
+                }
+            }
+
+            window.toggleTag = function (btn) {
+                btn.classList.toggle('btn-primary');
+                btn.classList.toggle('btn-outline-secondary');
+            };
+
         </script>
         <script>
             // Authentication Logic
