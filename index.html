@@ -1500,23 +1500,71 @@
                                 <textarea class="form-control form-control-sm" id="editBio" rows="2" maxlength="100"
                                     placeholder="Tell us about yourself..."></textarea>
                             </div>
-                            <div class="mb-3">
-                                <label class="form-label small">Tags</label>
-                                <div class="d-flex flex-wrap gap-2" id="editTagsContainer">
-                                    <!-- Tags injected by JS -->
-                                </div>
-                            </div>
-                            <div class="form-check form-switch mb-3">
-                                <input class="form-check-input" type="checkbox" id="privacyToggle">
-                                <label class="form-check-label small" for="privacyToggle">Private Profile (Hide stats
-                                    from leaderboard)</label>
-                            </div>
-                            <button id="saveProfileButton" class="btn btn-primary btn-sm w-100">Save Changes</button>
                         </div>
+                        <div class="mb-3">
+                            <label class="form-label small">Favorite Country (e.g. Sweden)</label>
+                            <select class="form-select form-select-sm" id="editFavCountry">
+                                <option value="">None</option>
+                                <option value="Sweden">Sweden</option>
+                                <option value="Finland">Finland</option>
+                                <option value="Norway">Norway</option>
+                                <option value="Denmark">Denmark</option>
+                                <option value="Iceland">Iceland</option>
+                                <option value="Ukraine">Ukraine</option>
+                                <option value="United Kingdom">United Kingdom</option>
+                                <option value="France">France</option>
+                                <option value="Spain">Spain</option>
+                                <option value="Italy">Italy</option>
+                                <option value="Germany">Germany</option>
+                                <option value="Poland">Poland</option>
+                                <option value="Netherlands">Netherlands</option>
+                                <option value="Greece">Greece</option>
+                                <option value="Cyprus">Cyprus</option>
+                                <option value="Israel">Israel</option>
+                                <option value="Ireland">Ireland</option>
+                                <option value="Australia">Australia</option>
+                                <option value="Portugal">Portugal</option>
+                                <option value="Switzerland">Switzerland</option>
+                                <option value="Croatia">Croatia</option>
+                                <option value="Serbia">Serbia</option>
+                                <option value="Estonia">Estonia</option>
+                                <option value="Lithuania">Lithuania</option>
+                                <option value="Latvia">Latvia</option>
+                                <option value="Moldova">Moldova</option>
+                                <option value="Armenia">Armenia</option>
+                                <option value="Georgia">Georgia</option>
+                                <option value="Azerbaijan">Azerbaijan</option>
+                                <option value="Belgium">Belgium</option>
+                                <option value="Austria">Austria</option>
+                                <option value="Czechia">Czechia</option>
+                                <option value="Slovenia">Slovenia</option>
+                                <option value="Albania">Albania</option>
+                                <option value="Malta">Malta</option>
+                                <option value="San Marino">San Marino</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label small">Social Handle (e.g. @username)</label>
+                            <input type="text" class="form-control form-control-sm" id="editSocial"
+                                placeholder="@username">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label small">Tags</label>
+                            <div class="d-flex flex-wrap gap-2" id="editTagsContainer">
+                                <!-- Tags injected by JS -->
+                            </div>
+                        </div>
+                        <div class="form-check form-switch mb-3">
+                            <input class="form-check-input" type="checkbox" id="privacyToggle">
+                            <label class="form-check-label small" for="privacyToggle">Private Profile (Hide stats
+                                from leaderboard)</label>
+                        </div>
+                        <button id="saveProfileButton" class="btn btn-primary btn-sm w-100">Save Changes</button>
                     </div>
                 </div>
             </div>
         </div>
+    </div>
     </div>
 
     <div class="eurovision-simulator container-fluid">
@@ -6226,7 +6274,11 @@
                 await loadJescData(type);
             }
 
-            const AVAILABLE_TAGS = ["Eurofan", "Statistician", "Jury Member", "Televoter", "Artist", "Historian", "Predictor", "Casual"];
+            const AVAILABLE_TAGS = [
+                "Eurofan", "Statistician", "Jury Member", "Televoter", "Artist", "Historian", "Predictor", "Casual",
+                "Sim Addict", "Flag Nerd", "Map Lover", "Underdog Fan", "Big 5 Hater", "Winner Predictor", "JESC Fan",
+                "NF Watcher", "San Remo Enjoyer", "Melodifestivalen Fan", "Chart Maker"
+            ];
 
             async function openProfileModal(targetUid) {
                 const modalEl = document.getElementById('profileModal');
@@ -6259,6 +6311,21 @@
                         document.getElementById('profileNickname').textContent = data.nickname || "Unknown";
                         document.getElementById('profileImage').src = data.avatarUrl || data.photoURL || 'https://placehold.co/100';
                         document.getElementById('profileBio').textContent = data.bio || (isOwner ? "No bio yet." : "");
+
+                        // New Fields Display
+                        const favCountry = data.favCountry || "";
+                        const social = data.social || "";
+                        let extraInfoHtml = "";
+                        if (favCountry) extraInfoHtml += `<span class="badge bg-danger me-1">❤️ ${favCountry}</span>`;
+                        if (social) extraInfoHtml += `<span class="badge bg-info text-dark">🔗 ${social}</span>`;
+
+                        // Insert extra info after bio
+                        const existingExtra = document.getElementById('profileExtraInfo');
+                        if (existingExtra) existingExtra.remove();
+                        if (extraInfoHtml) {
+                            document.getElementById('profileBio').insertAdjacentHTML('afterend', `<div id="profileExtraInfo" class="mb-2">${extraInfoHtml}</div>`);
+                        }
+
                         document.getElementById('profileSimulations').textContent = isPrivate ? "🔒" : (data.simulations || 0);
                         document.getElementById('profileJoinDate').textContent = data.createdAt ? new Date(data.createdAt.toDate()).toLocaleDateString() : "-";
 
@@ -6282,6 +6349,8 @@
                             editControls.style.display = 'block';
                             document.getElementById('editAvatarUrl').value = data.avatarUrl || "";
                             document.getElementById('editBio').value = data.bio || "";
+                            document.getElementById('editFavCountry').value = data.favCountry || "";
+                            document.getElementById('editSocial').value = data.social || "";
                             document.getElementById('privacyToggle').checked = data.isPrivate || false;
 
                             // Render Tag Selection
@@ -6299,6 +6368,8 @@
                             document.getElementById('saveProfileButton').onclick = async () => {
                                 const newAvatar = document.getElementById('editAvatarUrl').value.trim();
                                 const newBio = document.getElementById('editBio').value.trim();
+                                const newFavCountry = document.getElementById('editFavCountry').value;
+                                const newSocial = document.getElementById('editSocial').value.trim();
                                 const isPrivate = document.getElementById('privacyToggle').checked;
 
                                 // Collect tags
@@ -6309,6 +6380,8 @@
                                     await db.collection('users').doc(currentUser.uid).update({
                                         avatarUrl: newAvatar,
                                         bio: newBio,
+                                        favCountry: newFavCountry,
+                                        social: newSocial,
                                         isPrivate: isPrivate,
                                         tags: selectedTags
                                     });
