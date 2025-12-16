@@ -6275,29 +6275,97 @@
             }
 
             const ESC_COUNTRIES = [
+                // Europe
                 { name: "Albania", code: "al" }, { name: "Andorra", code: "ad" }, { name: "Armenia", code: "am" },
-                { name: "Australia", code: "au" }, { name: "Austria", code: "at" }, { name: "Azerbaijan", code: "az" },
-                { name: "Belarus", code: "by" }, { name: "Belgium", code: "be" }, { name: "Bosnia & Herzegovina", code: "ba" },
-                { name: "Bulgaria", code: "bg" }, { name: "Croatia", code: "hr" }, { name: "Cyprus", code: "cy" },
-                { name: "Czechia", code: "cz" }, { name: "Denmark", code: "dk" }, { name: "Estonia", code: "ee" },
-                { name: "Finland", code: "fi" }, { name: "France", code: "fr" }, { name: "Georgia", code: "ge" },
-                { name: "Germany", code: "de" }, { name: "Greece", code: "gr" }, { name: "Hungary", code: "hu" },
-                { name: "Iceland", code: "is" }, { name: "Ireland", code: "ie" }, { name: "Israel", code: "il" },
-                { name: "Italy", code: "it" }, { name: "Latvia", code: "lv" }, { name: "Lithuania", code: "lt" },
-                { name: "Luxembourg", code: "lu" }, { name: "Malta", code: "mt" }, { name: "Moldova", code: "md" },
-                { name: "Monaco", code: "mc" }, { name: "Montenegro", code: "me" }, { name: "Netherlands", code: "nl" },
-                { name: "North Macedonia", code: "mk" }, { name: "Norway", code: "no" }, { name: "Poland", code: "pl" },
-                { name: "Portugal", code: "pt" }, { name: "Romania", code: "ro" }, { name: "Russia", code: "ru" },
-                { name: "San Marino", code: "sm" }, { name: "Serbia", code: "rs" }, { name: "Slovakia", code: "sk" },
-                { name: "Slovenia", code: "si" }, { name: "Spain", code: "es" }, { name: "Sweden", code: "se" },
-                { name: "Switzerland", code: "ch" }, { name: "Turkey", code: "tr" }, { name: "Ukraine", code: "ua" },
-                { name: "United Kingdom", code: "gb" }
+                { name: "Austria", code: "at" }, { name: "Azerbaijan", code: "az" }, { name: "Belarus", code: "by" },
+                { name: "Belgium", code: "be" }, { name: "Bosnia & Herzegovina", code: "ba" }, { name: "Bulgaria", code: "bg" },
+                { name: "Croatia", code: "hr" }, { name: "Cyprus", code: "cy" }, { name: "Czechia", code: "cz" },
+                { name: "Denmark", code: "dk" }, { name: "Estonia", code: "ee" }, { name: "Finland", code: "fi" },
+                { name: "France", code: "fr" }, { name: "Georgia", code: "ge" }, { name: "Germany", code: "de" },
+                { name: "Greece", code: "gr" }, { name: "Hungary", code: "hu" }, { name: "Iceland", code: "is" },
+                { name: "Ireland", code: "ie" }, { name: "Italy", code: "it" }, { name: "Kazakhstan", code: "kz" },
+                { name: "Kosovo", code: "xk" }, { name: "Latvia", code: "lv" }, { name: "Liechtenstein", code: "li" },
+                { name: "Lithuania", code: "lt" }, { name: "Luxembourg", code: "lu" }, { name: "Malta", code: "mt" },
+                { name: "Moldova", code: "md" }, { name: "Monaco", code: "mc" }, { name: "Montenegro", code: "me" },
+                { name: "Netherlands", code: "nl" }, { name: "North Macedonia", code: "mk" }, { name: "Norway", code: "no" },
+                { name: "Poland", code: "pl" }, { name: "Portugal", code: "pt" }, { name: "Romania", code: "ro" },
+                { name: "Russia", code: "ru" }, { name: "San Marino", code: "sm" }, { name: "Serbia", code: "rs" },
+                { name: "Slovakia", code: "sk" }, { name: "Slovenia", code: "si" }, { name: "Spain", code: "es" },
+                { name: "Sweden", code: "se" }, { name: "Switzerland", code: "ch" }, { name: "Turkey", code: "tr" },
+                { name: "Ukraine", code: "ua" }, { name: "United Kingdom", code: "gb" }, { name: "Vatican City", code: "va" },
+
+                // Americas
+                { name: "Antigua & Barbuda", code: "ag" }, { name: "Argentina", code: "ar" }, { name: "Bahamas", code: "bs" },
+                { name: "Barbados", code: "bb" }, { name: "Belize", code: "bz" }, { name: "Bolivia", code: "bo" },
+                { name: "Brazil", code: "br" }, { name: "Canada", code: "ca" }, { name: "Chile", code: "cl" },
+                { name: "Colombia", code: "co" }, { name: "Costa Rica", code: "cr" }, { name: "Cuba", code: "cu" },
+                { name: "Dominica", code: "dm" }, { name: "Dominican Republic", code: "do" }, { name: "Ecuador", code: "ec" },
+                { name: "El Salvador", code: "sv" }, { name: "Grenada", code: "gd" }, { name: "Guatemala", code: "gt" },
+                { name: "Guyana", code: "gy" }, { name: "Haiti", code: "ht" }, { name: "Honduras", code: "hn" },
+                { name: "Jamaica", code: "jm" }, { name: "Mexico", code: "mx" }, { name: "Nicaragua", code: "ni" },
+                { name: "Panama", code: "pa" }, { name: "Paraguay", code: "py" }, { name: "Peru", code: "pe" },
+                { name: "Saint Kitts & Nevis", code: "kn" }, { name: "Saint Lucia", code: "lc" }, { name: "Saint Vincent", code: "vc" },
+                { name: "Suriname", code: "sr" }, { name: "Trinidad & Tobago", code: "tt" }, { name: "United States", code: "us" },
+                { name: "Uruguay", code: "uy" }, { name: "Venezuela", code: "ve" },
+
+                // Asia & Oceania
+                { name: "Afghanistan", code: "af" }, { name: "Australia", code: "au" }, { name: "Bangladesh", code: "bd" },
+                { name: "Bhutan", code: "bt" }, { name: "Brunei", code: "bn" }, { name: "Cambodia", code: "kh" },
+                { name: "China", code: "cn" }, { name: "East Timor", code: "tl" }, { name: "Fiji", code: "fj" },
+                { name: "India", code: "in" }, { name: "Indonesia", code: "id" }, { name: "Iran", code: "ir" },
+                { name: "Iraq", code: "iq" }, { name: "Israel", code: "il" }, { name: "Japan", code: "jp" },
+                { name: "Jordan", code: "jo" }, { name: "Kiribati", code: "ki" }, { name: "Kuwait", code: "kw" },
+                { name: "Kyrgyzstan", code: "kg" }, { name: "Laos", code: "la" }, { name: "Lebanon", code: "lb" },
+                { name: "Malaysia", code: "my" }, { name: "Maldives", code: "mv" }, { name: "Marshall Islands", code: "mh" },
+                { name: "Micronesia", code: "fm" }, { name: "Mongolia", code: "mn" }, { name: "Myanmar", code: "mm" },
+                { name: "Nauru", code: "nr" }, { name: "Nepal", code: "np" }, { name: "New Zealand", code: "nz" },
+                { name: "North Korea", code: "kp" }, { name: "Oman", code: "om" }, { name: "Pakistan", code: "pk" },
+                { name: "Palau", code: "pw" }, { name: "Palestine", code: "ps" }, { name: "Papua New Guinea", code: "pg" },
+                { name: "Philippines", code: "ph" }, { name: "Qatar", code: "qa" }, { name: "Samoa", code: "ws" },
+                { name: "Saudi Arabia", code: "sa" }, { name: "Singapore", code: "sg" }, { name: "Solomon Islands", code: "sb" },
+                { name: "South Korea", code: "kr" }, { name: "Sri Lanka", code: "lk" }, { name: "Syria", code: "sy" },
+                { name: "Taiwan", code: "tw" }, { name: "Tajikistan", code: "tj" }, { name: "Thailand", code: "th" },
+                { name: "Tonga", code: "to" }, { name: "Turkmenistan", code: "tm" }, { name: "Tuvalu", code: "tv" },
+                { name: "UAE", code: "ae" }, { name: "Uzbekistan", code: "uz" }, { name: "Vanuatu", code: "vu" },
+                { name: "Vietnam", code: "vn" }, { name: "Yemen", code: "ye" },
+
+                // Africa
+                { name: "Algeria", code: "dz" }, { name: "Angola", code: "ao" }, { name: "Benin", code: "bj" },
+                { name: "Botswana", code: "bw" }, { name: "Burkina Faso", code: "bf" }, { name: "Burundi", code: "bi" },
+                { name: "Cabo Verde", code: "cv" }, { name: "Cameroon", code: "cm" }, { name: "CAR", code: "cf" },
+                { name: "Chad", code: "td" }, { name: "Comoros", code: "km" }, { name: "Congo (DRC)", code: "cd" },
+                { name: "Congo (Republic)", code: "cg" }, { name: "Cote d'Ivoire", code: "ci" }, { name: "Djibouti", code: "dj" },
+                { name: "Egypt", code: "eg" }, { name: "Equatorial Guinea", code: "gq" }, { name: "Eritrea", code: "er" },
+                { name: "Eswatini", code: "sz" }, { name: "Ethiopia", code: "et" }, { name: "Gabon", code: "ga" },
+                { name: "Gambia", code: "gm" }, { name: "Ghana", code: "gh" }, { name: "Guinea", code: "gn" },
+                { name: "Guinea-Bissau", code: "gw" }, { name: "Kenya", code: "ke" }, { name: "Lesotho", code: "ls" },
+                { name: "Liberia", code: "lr" }, { name: "Libya", code: "ly" }, { name: "Madagascar", code: "mg" },
+                { name: "Malawi", code: "mw" }, { name: "Mali", code: "ml" }, { name: "Mauritania", code: "mr" },
+                { name: "Mauritius", code: "mu" }, { name: "Morocco", code: "ma" }, { name: "Mozambique", code: "mz" },
+                { name: "Namibia", code: "na" }, { name: "Niger", code: "ne" }, { name: "Nigeria", code: "ng" },
+                { name: "Rwanda", code: "rw" }, { name: "Sao Tome & Principe", code: "st" }, { name: "Senegal", code: "sn" },
+                { name: "Seychelles", code: "sc" }, { name: "Sierra Leone", code: "sl" }, { name: "Somalia", code: "so" },
+                { name: "South Africa", code: "za" }, { name: "South Sudan", code: "ss" }, { name: "Sudan", code: "sd" },
+                { name: "Tanzania", code: "tz" }, { name: "Togo", code: "tg" }, { name: "Tunisia", code: "tn" },
+                { name: "Uganda", code: "ug" }, { name: "Zambia", code: "zm" }, { name: "Zimbabwe", code: "zw" }
             ];
 
             const AVAILABLE_TAGS = [
-                "Eurofan", "Statistician", "Jury Member", "Televoter", "Artist", "Historian", "Predictor", "Casual",
-                "Sim Addict", "Flag Nerd", "Map Lover", "Underdog Fan", "Big 5 Hater", "Winner Predictor", "JESC Fan",
-                "NF Watcher", "San Remo Enjoyer", "Melodifestivalen Fan", "Chart Maker"
+                // General
+                "Eurofan", "Statistician", "Casual", "Predictor", "Sim Addict",
+                // Roles
+                "Jury Member", "Televoter", "Artist", "Historian", "Composer", "Commentator", "Journalist",
+                // Specific Interests
+                "JESC Fan", "NF Watcher", "San Remo Enjoyer", "Melodifestivalen Fan", "Chart Maker",
+                "Winner Predictor", "Underdog Fan", "Big 5 Hater", "Big 5 Lover",
+                // Fun / Personality
+                "Flag Nerd", "Map Lover", "Ballad Lover", "Bop Enjoyer", "Ethno-Bop Fan",
+                "Rock Fan", "Joke Entry Stan", "Robbed Queen Support", "Null Points Fear",
+                "Dark Horse Hunter", "Live Show Purist", "Studio Cut Only", "Postcard Critic",
+                "Stage Design Nerd", "Green Room Stalker", "Wind Machine Enthusiast",
+                "Key Change Spotter", "Pyrotechnics Fan", "Chaos Agent", "Peace & Love",
+                "Old School (Pre-2000)", "New School (Post-2010)", "Golden Era (2000s)",
+                "Recap Watcher", "Iceberg Explorer", "Reaction Video Addict"
             ];
 
             async function openProfileModal(targetUid) {
@@ -6459,6 +6527,102 @@
             window.toggleTag = function (btn) {
                 btn.classList.toggle('btn-primary');
                 btn.classList.toggle('btn-outline-secondary');
+            };
+
+            // Drag & Drop Logic for Countries
+            function initCountryDragDrop(currentName, currentCode) {
+                const sourceContainer = document.getElementById('favCountrySource');
+                const dropZone = document.getElementById('favCountryDropZone');
+                const hiddenName = document.getElementById('editFavCountryName');
+                const hiddenCode = document.getElementById('editFavCountryCode');
+
+                // 1. Populate Source
+                sourceContainer.innerHTML = '';
+                ESC_COUNTRIES.forEach(c => {
+                    const el = document.createElement('div');
+                    el.className = 'country-draggable badge bg-light text-dark border';
+                    el.style.cursor = 'grab';
+                    el.style.userSelect = 'none';
+                    el.draggable = true;
+                    el.dataset.code = c.code;
+                    el.dataset.name = c.name;
+                    el.innerHTML = `<span class="flag-icon flag-icon-${c.code}"></span> ${c.name}`;
+
+                    el.addEventListener('dragstart', (e) => {
+                        e.dataTransfer.setData('text/plain', JSON.stringify({ name: c.name, code: c.code }));
+                        el.style.opacity = '0.5';
+                    });
+                    el.addEventListener('dragend', () => {
+                        el.style.opacity = '1';
+                    });
+
+                    // Click to select fallback
+                    el.addEventListener('click', () => {
+                        setFavoriteCountry(c.name, c.code);
+                    });
+
+                    sourceContainer.appendChild(el);
+                });
+
+                // 2. Drop Zone Events
+                dropZone.addEventListener('dragover', (e) => {
+                    e.preventDefault(); // Allow drop
+                    dropZone.style.background = '#e9ecef';
+                });
+                dropZone.addEventListener('dragleave', () => {
+                    dropZone.style.background = '#f8f9fa';
+                });
+                dropZone.addEventListener('drop', (e) => {
+                    e.preventDefault();
+                    dropZone.style.background = '#f8f9fa';
+                    const data = e.dataTransfer.getData('text/plain');
+                    if (data) {
+                        try {
+                            const parsed = JSON.parse(data);
+                            setFavoriteCountry(parsed.name, parsed.code);
+                        } catch (err) { console.error(err); }
+                    }
+                });
+
+                // 3. Set Initial
+                if (currentName) {
+                    // Try to find code if missing
+                    let code = currentCode;
+                    if (!code) {
+                        const found = ESC_COUNTRIES.find(c => c.name === currentName);
+                        if (found) code = found.code;
+                    }
+                    if (code) setFavoriteCountry(currentName, code);
+                } else {
+                    resetDropZone();
+                }
+
+                function setFavoriteCountry(name, code) {
+                    hiddenName.value = name;
+                    hiddenCode.value = code;
+                    dropZone.innerHTML = `
+                        <div class="badge bg-primary fs-6 p-2">
+                             <span class="flag-icon flag-icon-${code}"></span> ${name} 
+                             <span class="ms-2" style="cursor:pointer; opacity:0.7;" onclick="event.stopPropagation(); resetDropZone();">×</span>
+                        </div>
+                    `;
+                }
+
+                window.resetDropZone = function () {
+                    document.getElementById('editFavCountryName').value = "";
+                    document.getElementById('editFavCountryCode').value = "";
+                    document.getElementById('favCountryDropZone').innerHTML = '<span class="text-muted small">Drag your favorite country here</span>';
+                };
+            }
+
+            window.filterCountries = function () {
+                const term = document.getElementById('favCountrySearch').value.toLowerCase();
+                const items = document.querySelectorAll('.country-draggable');
+                items.forEach(item => {
+                    const name = item.dataset.name.toLowerCase();
+                    if (name.includes(term)) item.style.display = 'inline-block';
+                    else item.style.display = 'none';
+                });
             };
 
         </script>
