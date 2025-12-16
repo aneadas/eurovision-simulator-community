@@ -1455,6 +1455,70 @@
         </div>
     </div>
 
+    <!-- Profile Modal (View/Edit) -->
+    <div class="modal fade" id="profileModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content" style="background: #ffffff; color: #333;">
+                <div class="modal-header"
+                    style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+                    <h5 class="modal-title">👤 User Profile</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body text-center">
+                    <div id="profileLoading" class="spinner-border text-primary" role="status"></div>
+                    <div id="profileContent" style="display: none;">
+                        <img id="profileImage" src="" class="rounded-circle mb-3 border border-3 border-light shadow"
+                            style="width: 100px; height: 100px; object-fit: cover;">
+                        <h3 id="profileNickname" class="fw-bold mb-1"></h3>
+                        <div id="profileBadges" class="mb-2"></div>
+                        <p id="profileBio" class="text-muted fst-italic px-4"></p>
+
+                        <div id="profileTags" class="d-flex justify-content-center flex-wrap gap-2 mb-3"></div>
+
+                        <div id="profileStats" class="row g-2 mb-3 border-top border-bottom py-2">
+                            <div class="col-6 border-end">
+                                <h5 class="fw-bold mb-0" id="profileSimulations">-</h5>
+                                <small class="text-muted">Simulations</small>
+                            </div>
+                            <div class="col-6">
+                                <h5 class="fw-bold mb-0" id="profileJoinDate">-</h5>
+                                <small class="text-muted">Joined</small>
+                            </div>
+                        </div>
+
+                        <!-- Edit Controls (Only visible to owner) -->
+                        <div id="editProfileControls" style="display: none;"
+                            class="mt-4 p-3 bg-light rounded text-start">
+                            <h6 class="fw-bold border-bottom pb-2">✏️ Edit Profile</h6>
+                            <div class="mb-3">
+                                <label class="form-label small">Avatar URL</label>
+                                <input type="text" class="form-control form-control-sm" id="editAvatarUrl"
+                                    placeholder="https://...">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label small">Bio</label>
+                                <textarea class="form-control form-control-sm" id="editBio" rows="2" maxlength="100"
+                                    placeholder="Tell us about yourself..."></textarea>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label small">Tags</label>
+                                <div class="d-flex flex-wrap gap-2" id="editTagsContainer">
+                                    <!-- Tags injected by JS -->
+                                </div>
+                            </div>
+                            <div class="form-check form-switch mb-3">
+                                <input class="form-check-input" type="checkbox" id="privacyToggle">
+                                <label class="form-check-label small" for="privacyToggle">Private Profile (Hide stats
+                                    from leaderboard)</label>
+                            </div>
+                            <button id="saveProfileButton" class="btn btn-primary btn-sm w-100">Save Changes</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="eurovision-simulator container-fluid">
         <h1 class="text-center mb-4">YOUR VERY OWN EUROVISION SIMULATOR</h1>
 
@@ -1482,6 +1546,8 @@
                                     <small class="text-success">● Online</small>
                                 </div>
                                 <button id="logoutButton" class="btn btn-sm btn-outline-danger ms-2">Logout</button>
+                                <button id="myProfileButton" class="btn btn-sm btn-outline-primary ms-1">My
+                                    Profile</button>
                             </div>
                         </div>
                         <button id="loginButton" class="btn btn-light mb-2 w-100 fw-bold"
@@ -4898,6 +4964,21 @@
 
                 </div>
                 <!--
+                    Latest version notes: 1.2.7 (by u/alexsemilos)
+                    In this release we add Google Login, User Leaderboard, and Badges
+                -->
+                <h6>Version 1.2.7 (by u/alexsemilos) <span class="badge bg-primary">USER PROFILE UPDATE!</span></h6>
+                <ul>
+                    <li style="color:blue;"><strong>&lt;NEW FEATURE&gt; Google Login & User Profiles:</strong>
+                        <ul>
+                            <li><strong>Google Sign-In</strong> - Log in securely with your Google account.</li>
+                            <li><strong>Nicknames</strong> - Choose a unique nickname to represent yourself on the leaderboard. Your email remains private!</li>
+                            <li><strong>User Leaderboard</strong> - Compete to see who runs the most simulations! Track your rank against other users.</li>
+                            <li><strong>Role Badges</strong> - Special badges for Admins (Red) and Developers (Blue) on the leaderboards.</li>
+                        </ul>
+                    </li>
+                </ul>
+                <!--
                     Latest version notes: 1.2.6 (by u/alexsemilos)
                     In this release we add JESC 2025 Voting
                 -->
@@ -5874,7 +5955,9 @@
                                 users.push({
                                     nickname: data.nickname,
                                     simulations: data.simulations || 0,
-                                    role: data.role || null
+                                    role: data.role || null,
+                                    uid: doc.id, // Store UID for click event
+                                    isPrivate: data.isPrivate || false
                                 });
                             }
                         });
@@ -5917,12 +6000,12 @@
                     }
 
                     tableRows += `
-                        <tr>
+                        <tr style="cursor: pointer;" onclick="openProfileModal('${user.uid}')">
                             <td class="leaderboard-rank ${rankClass}">${rankDisplay}</td>
                             <td style="font-weight: bold;">
-                                ${user.nickname} ${badgeHtml}
+                                ${user.nickname} ${badgeHtml} ${user.isPrivate ? '🔒' : ''}
                             </td>
-                            <td style="font-weight: bold; color: #6f42c1;">${user.simulations}</td>
+                            <td style="font-weight: bold; color: #6f42c1;">${user.isPrivate ? '-' : user.simulations}</td>
                         </tr>
                     `;
                 });
@@ -6182,6 +6265,13 @@
                 });
 
                 // State Observer
+
+                // Add listener for My Profile
+                document.getElementById('myProfileButton').addEventListener('click', () => {
+                    const user = firebase.auth().currentUser;
+                    if (user) openProfileModal(user.uid);
+                });
+
                 auth.onAuthStateChanged(async (user) => {
                     if (user) {
                         loginBtn.style.display = 'none';
