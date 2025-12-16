@@ -1407,6 +1407,29 @@
         </div>
     </div>
 
+    <!-- Nickname Modal -->
+    <div class="modal fade" id="nicknameModal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title">👤 Choose a Nickname</h5>
+                </div>
+                <div class="modal-body">
+                    <p>Welcome! Please choose a unique nickname to be displayed on the leaderboard.</p>
+                    <div class="mb-3">
+                        <label for="nicknameInput" class="form-label">Nickname</label>
+                        <input type="text" class="form-control" id="nicknameInput" placeholder="Enter your nickname..."
+                            maxlength="15">
+                        <div id="nicknameError" class="text-danger mt-1 small"></div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" id="saveNicknameButton">Save & Continue</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="eurovision-simulator container-fluid">
         <h1 class="text-center mb-4">YOUR VERY OWN EUROVISION SIMULATOR</h1>
 
@@ -5984,15 +6007,69 @@
                 });
 
                 // State Observer
-                auth.onAuthStateChanged((user) => {
+                auth.onAuthStateChanged(async (user) => {
                     if (user) {
                         loginBtn.style.display = 'none';
-                        authSection.style.display = 'block';
-                        userAvatar.src = user.photoURL || 'https://via.placeholder.com/40';
-                        userName.textContent = user.displayName || user.email;
 
-                        // Add a nice animation
-                        authSection.classList.add('fade-in');
+                        // Check if user has a nickname in Firestore
+                        if (firebaseEnabled && db) {
+                            const userRef = db.collection('users').doc(user.uid);
+                            try {
+                                const doc = await userRef.get();
+                                if (doc.exists && doc.data().nickname) {
+                                    // User has a nickname, show UI
+                                    const nickname = doc.data().nickname;
+                                    userAvatar.src = user.photoURL || 'https://via.placeholder.com/40';
+                                    userName.textContent = nickname; // Show Nickname ONLY
+
+                                    authSection.style.display = 'block';
+                                    authSection.classList.add('fade-in');
+                                } else {
+                                    // No nickname, show modal
+                                    const nicknameModal = new bootstrap.Modal(document.getElementById('nicknameModal'));
+                                    nicknameModal.show();
+
+                                    // Handle Save
+                                    document.getElementById('saveNicknameButton').onclick = async () => {
+                                        const input = document.getElementById('nicknameInput');
+                                        const nick = input.value.trim();
+                                        const errDiv = document.getElementById('nicknameError');
+
+                                        if (nick.length < 3) {
+                                            errDiv.textContent = "Nickname must be at least 3 characters.";
+                                            return;
+                                        }
+
+                                        // Save to Firestore
+                                        try {
+                                            await userRef.set({
+                                                nickname: nick,
+                                                email: user.email, // Store email privately for admin reference if needed
+                                                createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                                            }, { merge: true });
+
+                                            nicknameModal.hide();
+
+                                            // Update UI
+                                            userAvatar.src = user.photoURL || 'https://via.placeholder.com/40';
+                                            userName.textContent = nick;
+                                            authSection.style.display = 'block';
+                                        } catch (err) {
+                                            console.error("Error saving nickname:", err);
+                                            errDiv.textContent = "Error saving. Please try again.";
+                                        }
+                                    };
+                                }
+                            } catch (error) {
+                                console.error("Error fetching user data:", error);
+                            }
+                        } else {
+                            // Fallback if DB is not ready (shouldn't happen often)
+                            console.warn("DB not ready, using Display Name temporary");
+                            authSection.style.display = 'block';
+                            userName.textContent = user.displayName;
+                        }
+
                     } else {
                         loginBtn.style.display = 'block';
                         authSection.style.display = 'none';
