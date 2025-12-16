@@ -1518,6 +1518,11 @@
                             <input type="hidden" id="editFavCountryName">
                         </div>
                         <div class="mb-3">
+                            <label class="form-label small">Location</label>
+                            <input type="text" class="form-control form-control-sm" id="editLocation"
+                                placeholder="City, Country">
+                        </div>
+                        <div class="mb-3">
                             <label class="form-label small">Social Handle (e.g. @username)</label>
                             <input type="text" class="form-control form-control-sm" id="editSocial"
                                 placeholder="@username">
@@ -6353,7 +6358,9 @@
 
                 loading.style.display = 'block';
                 content.style.display = 'none';
-                editControls.style.display = 'none';
+                loading.style.display = 'block';
+                content.style.display = 'none';
+                editControls.style.display = 'none'; // Ensure hidden by default
 
                 const currentUser = firebase.auth().currentUser;
                 const isOwner = currentUser && currentUser.uid === targetUid;
@@ -6387,6 +6394,7 @@
                         }
 
                         const social = data.social || "";
+                        const location = data.location || "";
                         let extraInfoHtml = "";
                         if (favCountryName && displayCode) {
                             extraInfoHtml += `<span class="badge bg-light text-dark border me-1"><span class="flag-icon flag-icon-${displayCode}"></span> ${favCountryName}</span>`;
@@ -6394,6 +6402,7 @@
                             extraInfoHtml += `<span class="badge bg-danger me-1">❤️ ${favCountryName}</span>`;
                         }
 
+                        if (location) extraInfoHtml += `<span class="badge bg-warning text-dark me-1">📍 ${location}</span>`;
                         if (social) extraInfoHtml += `<span class="badge bg-info text-dark">🔗 ${social}</span>`;
 
                         // Insert extra info after bio
@@ -6428,6 +6437,7 @@
                             editControls.style.display = 'block';
                             document.getElementById('editAvatarUrl').value = data.avatarUrl || "";
                             document.getElementById('editBio').value = data.bio || "";
+                            document.getElementById('editLocation').value = data.location || "";
                             document.getElementById('editSocial').value = data.social || "";
                             document.getElementById('privacyToggle').checked = data.isPrivate || false;
 
@@ -6451,6 +6461,7 @@
                                 const newBio = document.getElementById('editBio').value.trim();
                                 const newFavCountryName = document.getElementById('editFavCountryName').value;
                                 const newFavCountryCode = document.getElementById('editFavCountryCode').value;
+                                const newLocation = document.getElementById('editLocation').value.trim();
                                 const newSocial = document.getElementById('editSocial').value.trim();
                                 const isPrivate = document.getElementById('privacyToggle').checked;
 
@@ -6464,6 +6475,7 @@
                                         bio: newBio,
                                         favCountry: newFavCountryName,
                                         favCountryCode: newFavCountryCode,
+                                        location: newLocation,
                                         social: newSocial,
                                         isPrivate: isPrivate,
                                         tags: selectedTags
