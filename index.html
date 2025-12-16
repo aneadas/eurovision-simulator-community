@@ -6510,6 +6510,12 @@
                 const hiddenName = document.getElementById('editFavCountryName');
                 const hiddenCode = document.getElementById('editFavCountryCode');
 
+                window.resetDropZone = function () {
+                    document.getElementById('editFavCountryName').value = "";
+                    document.getElementById('editFavCountryCode').value = "";
+                    document.getElementById('favCountryDropZone').innerHTML = '<span class="text-muted small">Drag your favorite country here</span>';
+                };
+
                 // 1. Populate Source
                 sourceContainer.innerHTML = '';
                 ESC_COUNTRIES.forEach(c => {
@@ -6558,6 +6564,17 @@
                     }
                 });
 
+                function setFavoriteCountry(name, code) {
+                    hiddenName.value = name;
+                    hiddenCode.value = code;
+                    dropZone.innerHTML = `
+                        <div class="badge bg-primary fs-6 p-2">
+                             <span class="flag-icon flag-icon-${code}"></span> ${name} 
+                             <span class="ms-2" style="cursor:pointer; opacity:0.7;" onclick="event.stopPropagation(); resetDropZone();">×</span>
+                        </div>
+                    `;
+                }
+
                 // 3. Set Initial
                 if (currentName) {
                     // Try to find code if missing
@@ -6570,23 +6587,6 @@
                 } else {
                     resetDropZone();
                 }
-
-                function setFavoriteCountry(name, code) {
-                    hiddenName.value = name;
-                    hiddenCode.value = code;
-                    dropZone.innerHTML = `
-                        <div class="badge bg-primary fs-6 p-2">
-                             <span class="flag-icon flag-icon-${code}"></span> ${name} 
-                             <span class="ms-2" style="cursor:pointer; opacity:0.7;" onclick="event.stopPropagation(); resetDropZone();">×</span>
-                        </div>
-                    `;
-                }
-
-                window.resetDropZone = function () {
-                    document.getElementById('editFavCountryName').value = "";
-                    document.getElementById('editFavCountryCode').value = "";
-                    document.getElementById('favCountryDropZone').innerHTML = '<span class="text-muted small">Drag your favorite country here</span>';
-                };
             }
 
             window.filterCountries = function () {
