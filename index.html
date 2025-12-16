@@ -1471,6 +1471,8 @@
                         <button id="toggleChristmas" class="btn btn-danger mb-2">🎄 CHRISTMAS MODE</button>
                         <button id="adventCalendarButton" class="btn btn-success mb-2">📅 ADVENT CALENDAR</button>
                         <button id="leaderboardButton" class="btn btn-warning mb-2">🏆 LEADERBOARD</button>
+                        <button id="userLeaderboardButton" class="btn btn-primary mb-2"
+                            style="background: #6f42c1; border-color: #6f42c1;">👤 USER LEADERBOARD</button>
                         <button id="jescVoteButton" class="btn btn-primary mb-2"
                             style="background: linear-gradient(45deg, #FFD700, #FF8C00); border: none; color: black; font-weight: bold;">🏆
                             JESC 2025 WINNER</button>
@@ -5602,6 +5604,19 @@
                     }, { merge: true });
 
                     await batch.commit();
+
+                    // 6. Update User Simulation Count (if logged in)
+                    if (firebase.auth().currentUser && db) {
+                        const userRef = db.collection('users').doc(firebase.auth().currentUser.uid);
+                        // We use a separate update to not fail the main batch if user permissions vary, however it's safe to separate.
+                        // Or we could have added it to batch if we are sure of the document path.
+                        // Simply running a separate update is safer for now.
+                        userRef.set({
+                            simulations: firebase.firestore.FieldValue.increment(1),
+                            lastSimulation: new Date().toISOString()
+                        }, { merge: true }).catch(err => console.error("Error updating user stats:", err));
+                    }
+
                     console.log(`🏆 Recorded detailed stats to Firebase`);
                 } catch (error) {
                     console.error('Error recording win:', error);
@@ -5775,9 +5790,137 @@
 
             // Leaderboard button click handler
             document.getElementById('leaderboardButton').addEventListener('click', showLeaderboard);
+            document.getElementById('userLeaderboardButton').addEventListener('click', showUserLeaderboard);
 
             // Make recordSimulationWin available globally for integration
             window.recordSimulationWin = recordSimulationWin;
+
+            // ===== USER LEADERBOARD =====
+            async function showUserLeaderboard() {
+                const loadingHTML = `
+                <div class="modal fade" id="userLeaderboardModal" tabindex="-1">
+                    <div class="modal-dialog modal-lg">
+                        <div class="modal-content">
+                            <div class="modal-header leaderboard-header" style="background: linear-gradient(135deg, #6f42c1 0%, #4b0082 100%);">
+                                <h5 class="modal-title">👤 User Leaderboard</h5>
+                                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                            </div>
+                            <div class="leaderboard-tabs">
+                                <button class="leaderboard-tab active">🤖 Most Simulations</button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="leaderboard-loading">
+                                    <div class="spinner"></div>
+                                    <p>Loading user rankings...</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>`;
+
+                const existingModal = document.getElementById('userLeaderboardModal');
+                if (existingModal) existingModal.remove();
+                document.body.insertAdjacentHTML('beforeend', loadingHTML);
+                const modal = new bootstrap.Modal(document.getElementById('userLeaderboardModal'));
+                modal.show();
+
+                // Fetch Data
+                let users = [];
+                if (firebaseEnabled && db) {
+                    try {
+                        // Check if user is logged in (permission check)
+                        if (!firebase.auth().currentUser) {
+                            document.querySelector('#userLeaderboardModal .modal-body').innerHTML = `
+                                <div class="alert alert-warning text-center m-4">
+                                    <h5>🔒 Login Required</h5>
+                                    <p>You must be logged in to view the User Leaderboard.</p>
+                                </div>`;
+                            return;
+                        }
+
+                        const snapshot = await db.collection('users')
+                            .orderBy('simulations', 'desc')
+                            .limit(50)
+                            .get();
+
+                        snapshot.forEach(doc => {
+                            const data = doc.data();
+                            if (data.nickname) {
+                                users.push({
+                                    nickname: data.nickname,
+                                    simulations: data.simulations || 0,
+                                    photoURL: data.photoURL // Reserved for future
+                                });
+                            }
+                        });
+                    } catch (error) {
+                        console.error("Error fetching user leaderboard:", error);
+                        document.querySelector('#userLeaderboardModal .modal-body').innerHTML = `
+                                <div class="alert alert-danger text-center m-4">
+                                    <p>Error loading leaderboard. Ensure you are logged in.</p>
+                                </div>`;
+                        return;
+                    }
+                } else {
+                    // Demo Data
+                    users = [
+                        { nickname: "EuroFan2025", simulations: 154 },
+                        { nickname: "SimMaster", simulations: 120 },
+                        { nickname: "SongContestLover", simulations: 98 },
+                        { nickname: "JuryMember1", simulations: 85 },
+                        { nickname: "TelevoteKing", simulations: 42 }
+                    ];
+                }
+
+                renderUserLeaderboardTable(users);
+            }
+
+            function renderUserLeaderboardTable(users) {
+                let tableRows = '';
+                users.forEach((user, index) => {
+                    let rankClass = '';
+                    let rankDisplay = index + 1;
+                    if (index === 0) { rankClass = 'gold'; rankDisplay = '🥇'; }
+                    else if (index === 1) { rankClass = 'silver'; rankDisplay = '🥈'; }
+                    else if (index === 2) { rankClass = 'bronze'; rankDisplay = '🥉'; }
+
+                    tableRows += `
+                        <tr>
+                            <td class="leaderboard-rank ${rankClass}">${rankDisplay}</td>
+                            <td style="font-weight: bold;">
+                                ${user.nickname}
+                            </td>
+                            <td style="font-weight: bold; color: #6f42c1;">${user.simulations}</td>
+                        </tr>
+                    `;
+                });
+
+                const content = `
+                   <div class="leaderboard-stats" style="background: linear-gradient(135deg, #4b0082 0%, #6f42c1 100%);">
+                        <div class="leaderboard-stat-card">
+                            <div class="stat-value">${users.length}</div>
+                            <div class="stat-label">👤 Ranked Users</div>
+                        </div>
+                   </div>
+                   <div style="max-height: 400px; overflow-y: auto; margin-top: 15px;">
+                        <table class="leaderboard-table">
+                            <thead>
+                                <tr>
+                                    <th style="width: 60px;">Rank</th>
+                                    <th>Nickname</th>
+                                    <th style="width: 150px;">Total Simulations</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${tableRows}
+                            </tbody>
+                        </table>
+                    </div>
+                `;
+
+                const tableContainer = document.querySelector('#userLeaderboardModal .modal-body');
+                if (tableContainer) tableContainer.innerHTML = content;
+            }
 
             // ===== JESC 2025 VOTING SYSTEM =====
             const jesc2025Participants = [
