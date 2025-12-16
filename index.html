@@ -6257,7 +6257,7 @@
 
                         // Populate View
                         document.getElementById('profileNickname').textContent = data.nickname || "Unknown";
-                        document.getElementById('profileImage').src = data.avatarUrl || data.photoURL || 'https://via.placeholder.com/100';
+                        document.getElementById('profileImage').src = data.avatarUrl || data.photoURL || 'https://placehold.co/100';
                         document.getElementById('profileBio').textContent = data.bio || (isOwner ? "No bio yet." : "");
                         document.getElementById('profileSimulations').textContent = isPrivate ? "🔒" : (data.simulations || 0);
                         document.getElementById('profileJoinDate').textContent = data.createdAt ? new Date(data.createdAt.toDate()).toLocaleDateString() : "-";
@@ -6313,11 +6313,11 @@
                                         tags: selectedTags
                                     });
                                     modal.hide();
-                                    if (document.getElementById('userLeaderboardModal').classList.contains('show')) {
-                                        // Refresh leaderboard if open - accessing the function if global or attached to window
-                                        // Note: showUserLeaderboard is defined inside DOMContentLoaded. 
-                                        // To make it accessible, we might need to expose it or close/reopen.
-                                        // For now, let's just close the profile modal.
+                                    modal.hide();
+                                    const leaderboardModal = document.getElementById('userLeaderboardModal');
+                                    if (leaderboardModal && leaderboardModal.classList.contains('show')) {
+                                        // Ideally we would refresh here, but for now just saving is enough.
+                                        // The user can close/re-open leaderboard to see changes.
                                     }
                                 } catch (e) {
                                     console.error(e);
