@@ -6274,6 +6274,26 @@
                 await loadJescData(type);
             }
 
+            const ESC_COUNTRIES = [
+                { name: "Albania", code: "al" }, { name: "Andorra", code: "ad" }, { name: "Armenia", code: "am" },
+                { name: "Australia", code: "au" }, { name: "Austria", code: "at" }, { name: "Azerbaijan", code: "az" },
+                { name: "Belarus", code: "by" }, { name: "Belgium", code: "be" }, { name: "Bosnia & Herzegovina", code: "ba" },
+                { name: "Bulgaria", code: "bg" }, { name: "Croatia", code: "hr" }, { name: "Cyprus", code: "cy" },
+                { name: "Czechia", code: "cz" }, { name: "Denmark", code: "dk" }, { name: "Estonia", code: "ee" },
+                { name: "Finland", code: "fi" }, { name: "France", code: "fr" }, { name: "Georgia", code: "ge" },
+                { name: "Germany", code: "de" }, { name: "Greece", code: "gr" }, { name: "Hungary", code: "hu" },
+                { name: "Iceland", code: "is" }, { name: "Ireland", code: "ie" }, { name: "Israel", code: "il" },
+                { name: "Italy", code: "it" }, { name: "Latvia", code: "lv" }, { name: "Lithuania", code: "lt" },
+                { name: "Luxembourg", code: "lu" }, { name: "Malta", code: "mt" }, { name: "Moldova", code: "md" },
+                { name: "Monaco", code: "mc" }, { name: "Montenegro", code: "me" }, { name: "Netherlands", code: "nl" },
+                { name: "North Macedonia", code: "mk" }, { name: "Norway", code: "no" }, { name: "Poland", code: "pl" },
+                { name: "Portugal", code: "pt" }, { name: "Romania", code: "ro" }, { name: "Russia", code: "ru" },
+                { name: "San Marino", code: "sm" }, { name: "Serbia", code: "rs" }, { name: "Slovakia", code: "sk" },
+                { name: "Slovenia", code: "si" }, { name: "Spain", code: "es" }, { name: "Sweden", code: "se" },
+                { name: "Switzerland", code: "ch" }, { name: "Turkey", code: "tr" }, { name: "Ukraine", code: "ua" },
+                { name: "United Kingdom", code: "gb" }
+            ];
+
             const AVAILABLE_TAGS = [
                 "Eurofan", "Statistician", "Jury Member", "Televoter", "Artist", "Historian", "Predictor", "Casual",
                 "Sim Addict", "Flag Nerd", "Map Lover", "Underdog Fan", "Big 5 Hater", "Winner Predictor", "JESC Fan",
@@ -6313,10 +6333,25 @@
                         document.getElementById('profileBio').textContent = data.bio || (isOwner ? "No bio yet." : "");
 
                         // New Fields Display
-                        const favCountry = data.favCountry || "";
+                        // New Fields Display
+                        const favCountryName = data.favCountry || "";
+                        const favCountryCode = data.favCountryCode || ""; // Backward compatibility attempt?
+
+                        // Try to find code if missing
+                        let displayCode = favCountryCode;
+                        if (!displayCode && favCountryName) {
+                            const found = ESC_COUNTRIES.find(c => c.name === favCountryName);
+                            if (found) displayCode = found.code;
+                        }
+
                         const social = data.social || "";
                         let extraInfoHtml = "";
-                        if (favCountry) extraInfoHtml += `<span class="badge bg-danger me-1">❤️ ${favCountry}</span>`;
+                        if (favCountryName && displayCode) {
+                            extraInfoHtml += `<span class="badge bg-light text-dark border me-1"><span class="flag-icon flag-icon-${displayCode}"></span> ${favCountryName}</span>`;
+                        } else if (favCountryName) {
+                            extraInfoHtml += `<span class="badge bg-danger me-1">❤️ ${favCountryName}</span>`;
+                        }
+
                         if (social) extraInfoHtml += `<span class="badge bg-info text-dark">🔗 ${social}</span>`;
 
                         // Insert extra info after bio
@@ -6325,6 +6360,8 @@
                         if (extraInfoHtml) {
                             document.getElementById('profileBio').insertAdjacentHTML('afterend', `<div id="profileExtraInfo" class="mb-2">${extraInfoHtml}</div>`);
                         }
+
+
 
                         document.getElementById('profileSimulations').textContent = isPrivate ? "🔒" : (data.simulations || 0);
                         document.getElementById('profileJoinDate').textContent = data.createdAt ? new Date(data.createdAt.toDate()).toLocaleDateString() : "-";
@@ -6349,9 +6386,11 @@
                             editControls.style.display = 'block';
                             document.getElementById('editAvatarUrl').value = data.avatarUrl || "";
                             document.getElementById('editBio').value = data.bio || "";
-                            document.getElementById('editFavCountry').value = data.favCountry || "";
                             document.getElementById('editSocial').value = data.social || "";
                             document.getElementById('privacyToggle').checked = data.isPrivate || false;
+
+                            // Init Country Drag & Drop
+                            initCountryDragDrop(data.favCountry, data.favCountryCode);
 
                             // Render Tag Selection
                             const editTagsContainer = document.getElementById('editTagsContainer');
@@ -6368,7 +6407,8 @@
                             document.getElementById('saveProfileButton').onclick = async () => {
                                 const newAvatar = document.getElementById('editAvatarUrl').value.trim();
                                 const newBio = document.getElementById('editBio').value.trim();
-                                const newFavCountry = document.getElementById('editFavCountry').value;
+                                const newFavCountryName = document.getElementById('editFavCountryName').value;
+                                const newFavCountryCode = document.getElementById('editFavCountryCode').value;
                                 const newSocial = document.getElementById('editSocial').value.trim();
                                 const isPrivate = document.getElementById('privacyToggle').checked;
 
@@ -6380,7 +6420,8 @@
                                     await db.collection('users').doc(currentUser.uid).update({
                                         avatarUrl: newAvatar,
                                         bio: newBio,
-                                        favCountry: newFavCountry,
+                                        favCountry: newFavCountryName,
+                                        favCountryCode: newFavCountryCode,
                                         social: newSocial,
                                         isPrivate: isPrivate,
                                         tags: selectedTags
