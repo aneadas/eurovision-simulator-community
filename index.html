@@ -5684,6 +5684,34 @@
             async function recordSimulationWin(winnerCountry, winnerCode, results, sortedCountries) {
                 if (!firebaseEnabled || !db) return;
 
+                // 🛡️ SPAM PROTECTION & VALIDATION 🛡️
+                const RATE_LIMIT_MS = 15000; // 15 Seconds Cooldown
+                const STORAGE_KEY = 'simek_last_sim_time';
+
+                const now = Date.now();
+                const lastSim = parseInt(localStorage.getItem(STORAGE_KEY) || '0');
+
+                // 1. Time Check
+                if (now - lastSim < RATE_LIMIT_MS) {
+                    console.warn(`⚠️ Simulation recorded too quickly. Please wait ${Math.ceil((RATE_LIMIT_MS - (now - lastSim)) / 1000)}s.`);
+                    return; // Silent reject to stop bots
+                }
+
+                // 2. Data Validation Check
+                const isValidCountry = ESC_COUNTRIES.some(c => c.code === winnerCode);
+                if (!isValidCountry) {
+                    console.error("❌ Invalid winner code detected. Possible manipulation attempt.");
+                    return;
+                }
+
+                if (!results || !sortedCountries || sortedCountries.length < 5) {
+                    console.error("❌ Invalid simulation data.");
+                    return;
+                }
+
+                // Update timestamp immediately to blocked parallel calls
+                localStorage.setItem(STORAGE_KEY, now.toString());
+
                 try {
                     const batch = db.batch();
 
