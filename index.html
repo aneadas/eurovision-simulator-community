@@ -1593,9 +1593,7 @@
                         <button id="leaderboardButton" class="btn btn-warning mb-2">🏆 LEADERBOARD</button>
                         <button id="userLeaderboardButton" class="btn btn-primary mb-2"
                             style="background: #6f42c1; border-color: #6f42c1;">👤 USER LEADERBOARD</button>
-                        <button id="jescVoteButton" class="btn btn-primary mb-2"
-                            style="background: linear-gradient(45deg, #FFD700, #FF8C00); border: none; color: black; font-weight: bold;">🏆
-                            JESC 2025 WINNER</button>
+
                         <button id="instructionsButton" class="btn btn-info mb-2">INSTRUCTIONS</button>
                         <button id="whatsNewButton" class="btn btn-warning mb-2">WHAT'S NEW?</button>
                         <button id="generateButton" class="btn btn-warning mb-2">GENERATE</button>
@@ -5678,12 +5676,12 @@
 
                     // Initialize App Check with reCAPTCHA v3 (only on production, not localhost)
                     // APP CHECK DISABLED due to client-side blocking issues (AdBlock). Relying on Auth + Security Rules.
-                    if (false && !isLocalhost) {
+                    if (!isLocalhost) {
                         const appCheck = firebase.appCheck();
                         appCheck.activate('6Lei5igsAAAAACmnL1hacrM-bsA_SUyuM4nutnh-', true);
                         console.log('🔒 App Check activated with reCAPTCHA v3');
                     } else {
-                        console.log('⚠️ Localhost detected - App Check disabled for development');
+                        console.info('ℹ️ App Check disabled for development (Localhost)');
                     }
 
                     db = firebase.firestore();
@@ -6300,194 +6298,7 @@
                 if (tableContainer) tableContainer.innerHTML = content;
             }
 
-            // ===== JESC 2025 VOTING SYSTEM =====
-            const jesc2025Participants = [
-                { code: 'mt', name: 'Malta', artist: 'Eliza Borg', song: 'I Believe' },
-                { code: 'az', name: 'Azerbaijan', artist: 'Yağmur', song: 'Miau Miau' },
-                { code: 'hr', name: 'Croatia', artist: 'Marino Vrgoč', song: 'Snovi' },
-                { code: 'sm', name: 'San Marino', artist: 'Martina CRV', song: 'Beyond the Stars' },
-                { code: 'am', name: 'Armenia', artist: 'Albert', song: 'Brave Heart' },
-                { code: 'ua', name: 'Ukraine', artist: 'Sofija Nersesian', song: 'Motanka' },
-                { code: 'ie', name: 'Ireland', artist: "Lottie O'Driscoll Murray", song: 'Rúin' },
-                { code: 'nl', name: 'Netherlands', artist: 'Meadow', song: 'Freeze' },
-                { code: 'pl', name: 'Poland', artist: 'Marianna Kłos', song: 'Brightest Light' },
-                { code: 'mk', name: 'North Macedonia', artist: 'Nela Manczeska', song: 'Miracle' },
-                { code: 'me', name: 'Montenegro', artist: 'Asja Džogović', song: 'I tužna i srećna priča' },
-                { code: 'it', name: 'Italy', artist: 'Leonardo Giovannangeli', song: 'Rockstar' },
-                { code: 'pt', name: 'Portugal', artist: 'Inês Gonçalves', song: 'Para onde vai o amor?' },
-                { code: 'es', name: 'Spain', artist: 'Gonzalo Pinillos', song: 'Érase una vez' },
-                { code: 'ge', name: 'Georgia', artist: 'Anita Abgariani', song: 'Shine Like a Star' },
-                { code: 'cy', name: 'Cyprus', artist: 'Rafaella i Christos', song: 'Away' },
-                { code: 'fr', name: 'France', artist: 'Lou Deleuze', song: 'Ce monde' },
-                { code: 'al', name: 'Albania', artist: 'Kroni Pula', song: 'Fruta perime' }
-            ];
 
-            const jescVoteButton = document.getElementById('jescVoteButton');
-            const jescList = document.getElementById('jescParticipantsList');
-            const jescPredictionList = document.getElementById('jescPredictionList');
-            let jescModal = null; // Lazy init
-
-            // Initialization
-            jescVoteButton.addEventListener('click', async () => {
-                if (!jescModal) {
-                    jescModal = new bootstrap.Modal(document.getElementById('jescVotingModal'));
-
-                    // Add tab change listener to load data when switching tabs
-                    document.getElementById('vote-tab').addEventListener('shown.bs.tab', () => loadJescData('vote'));
-                    document.getElementById('prediction-tab').addEventListener('shown.bs.tab', () => loadJescData('prediction'));
-                }
-                jescModal.show();
-                await loadJescData('vote'); // Load default tab
-            });
-
-            async function loadJescData(type) {
-                const targetList = type === 'vote' ? jescList : jescPredictionList;
-                const collectionName = type === 'vote' ? 'jesc_2025_votes' : 'jesc_2025_predictions';
-
-                targetList.innerHTML = '<div class="text-center"><div class="spinner-border text-primary" role="status"></div></div>';
-
-                let votesData = {};
-                let totalVotes = 0;
-
-                // Fetch votes from Firebase if enabled
-                if (firebaseEnabled && db) {
-                    try {
-                        const snapshot = await db.collection(collectionName).get();
-                        snapshot.forEach(doc => {
-                            votesData[doc.id] = doc.data().votes || 0;
-                            totalVotes += doc.data().votes || 0;
-                        });
-                    } catch (error) {
-                        console.error(`Error fetching JESC ${type} data`, error);
-                    }
-                }
-
-                renderJescList(votesData, totalVotes, type);
-            }
-
-            function renderJescList(votesData, totalVotes, type) {
-                const targetList = type === 'vote' ? jescList : jescPredictionList;
-                // Voting Closed - ignore local storage state for UI, always show results
-
-                targetList.innerHTML = '';
-
-                // Show Winner Header
-                if (type === 'vote') {
-                    const winnerHtml = `
-                        <div class="text-center mb-4 p-3" style="background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%); border-radius: 15px; color: black; box-shadow: 0 4px 15px rgba(0,0,0,0.2);">
-                            <h2 style="font-weight: 900; margin-bottom: 5px;">🏆 WINNER 🏆</h2>
-                            <h3 style="font-size: 2.5em; margin: 10px 0;">🇫🇷 FRANCE</h3>
-                            <h5 style="font-weight: normal;">Lou Deleuze - "Ce monde"</h5>
-                        </div>
-                        <h5 class="text-center mb-3">Full Results (Voting Closed)</h5>
-                    `;
-                    targetList.insertAdjacentHTML('beforeend', winnerHtml);
-                } else {
-                    targetList.insertAdjacentHTML('beforeend', '<h5 class="text-center mb-3">Prediction Results (Voting Closed)</h5>');
-                }
-
-                // Always sort by votes descending
-                let sortedParticipants = [...jesc2025Participants];
-                sortedParticipants.sort((a, b) => {
-                    const votesA = votesData[a.code] || 0;
-                    const votesB = votesData[b.code] || 0;
-                    return votesB - votesA;
-                });
-
-                sortedParticipants.forEach((p, index) => {
-                    const votes = votesData[p.code] || 0;
-                    const percent = totalVotes > 0 ? ((votes / totalVotes) * 100).toFixed(1) : 0;
-
-                    const item = document.createElement('div');
-                    item.className = 'list-group-item d-flex justify-content-between align-items-center flex-wrap';
-
-                    // Always show results UI
-                    let badgeColor = type === 'vote' ? 'bg-primary' : 'bg-success';
-                    let actionHtml = `
-                        <div class="d-flex flex-column align-items-end" style="min-width: 100px;">
-                            <span class="badge ${badgeColor} rounded-pill mb-1">${votes} votes</span>
-                            <small class="text-muted">${percent}%</small>
-                        </div>
-                     `;
-                    // Progress bar background
-                    let color = type === 'vote' ? '230,240,255' : '230,255,230';
-                    item.style.background = `linear-gradient(to right, rgba(${color},1) ${percent}%, white ${percent}%)`;
-
-                    item.innerHTML = `
-                        <div class="d-flex align-items-center">
-                            <span class="flag-icon flag-icon-${p.code} me-3" style="font-size: 1.5em; margin-right: 15px;"></span>
-                            <div>
-                                <h6 class="mb-0 fw-bold">#${index + 1} ${p.name}</h6>
-                                <small class="text-muted">${p.artist} - "<em>${p.song}</em>"</small>
-                            </div>
-                        </div>
-                        ${actionHtml}
-                    `;
-                    targetList.appendChild(item);
-                });
-
-                // No event listeners needed as there are no buttons
-            }
-
-            async function castAction(countryCode, type) {
-                const countryName = jesc2025Participants.find(c => c.code === countryCode).name;
-                const actionName = type === 'vote' ? 'vote' : 'predict';
-                const collectionName = type === 'vote' ? 'jesc_2025_votes' : 'jesc_2025_predictions';
-                const storageKey = type === 'vote' ? 'hasVotedJESC2025' : 'hasPredictedJESC2025';
-
-                if (!confirm(`Are you sure you want to ${actionName} for ${countryName}? You cannot change this choice.`)) {
-                    return;
-                }
-
-                if (localStorage.getItem(storageKey) === 'true') {
-                    alert("You have already done this!");
-                    return;
-                }
-
-                // Optimistic update
-                localStorage.setItem(storageKey, 'true');
-
-                if (firebaseEnabled && db) {
-                    try {
-                        const docRef = db.collection(collectionName).doc(countryCode);
-                        await docRef.set({
-                            votes: firebase.firestore.FieldValue.increment(1)
-                        }, { merge: true });
-                        console.log(`${actionName} cast successfully!`);
-
-                        // Show Success Modal
-                        const successModalHtml = `
-                        <div class="modal fade" id="voteSuccessModal" tabindex="-1" aria-hidden="true">
-                            <div class="modal-dialog modal-dialog-centered">
-                                <div class="modal-content text-center">
-                                    <div class="modal-body p-4">
-                                        <div style="font-size: 3rem; margin-bottom: 10px;">🎉</div>
-                                        <h4 class="mb-3">Thank You!</h4>
-                                        <p class="mb-0">Your ${actionName} for <strong>${countryName}</strong> has been recorded.</p>
-                                    </div>
-                                    <div class="modal-footer justify-content-center">
-                                        <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Awesome!</button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>`;
-
-                        document.body.insertAdjacentHTML('beforeend', successModalHtml);
-                        const successModal = new bootstrap.Modal(document.getElementById('voteSuccessModal'));
-                        successModal.show();
-                        document.getElementById('voteSuccessModal').addEventListener('hidden.bs.modal', function () {
-                            this.remove();
-                        });
-
-                    } catch (error) {
-                        console.error(`Error casting ${actionName}:`, error);
-                        alert("There was an error saving online, but it's recorded locally.");
-                    }
-                }
-
-                // Reload to show results
-                await loadJescData(type);
-            }
 
             const ESC_COUNTRIES = [
                 // Europe
