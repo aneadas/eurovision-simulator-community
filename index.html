@@ -5677,7 +5677,8 @@
                     firebase.initializeApp(firebaseConfig);
 
                     // Initialize App Check with reCAPTCHA v3 (only on production, not localhost)
-                    if (!isLocalhost) {
+                    // APP CHECK DISABLED due to client-side blocking issues (AdBlock). Relying on Auth + Security Rules.
+                    if (false && !isLocalhost) {
                         const appCheck = firebase.appCheck();
                         appCheck.activate('6Lei5igsAAAAACmnL1hacrM-bsA_SUyuM4nutnh-', true);
                         console.log('🔒 App Check activated with reCAPTCHA v3');
