@@ -5772,37 +5772,31 @@
             const antiSpamSystem = {
                 // Comprehensive banned words/phrases (political, offensive, spam)
                 bannedPatterns: [
-                    // Israel-Palestine conflict
-                    /palest[i1][n|\u006e]e?/i, /\b[i1]sra[e3]l/i, /\bg[a4]z[a4]\b/i, /h[a4]m[a4]s/i,
+                    // Israel-Palestine conflict (Boundaries removed for stricter matching)
+                    /palest[i1][n|\u006e]e?/i, /[i1]sra[e3]l/i, /g[a4]z[a4]/i, /h[a4]m[a4]s/i,
                     /[i1]nt[i1]f[a4]d[a4]/i, /z[i1][o0]n[i1]st?s?/i, /\bnak?b[a4]\b/i,
                     /\bidf\b/i, /hezboll?ah/i, /free.?palest/i, /from.?river/i,
-                    /aparthe[i1]d/i, /genoc[i1]de/i, /ethnic.?cleans/i, /\bj[e3]w[i1]sh/i,
+                    /aparthe[i1]d/i, /genoc[i1]de/i, /ethnic.?cleans/i, /j[e3]w[i1]sh/i,
                     /\barab\b/i, /\bmuslim/i, /\bislam/i, /west.?bank/i, /\bbibi\b/i,
                     /netanyahu/i, /\bwar.?crim/i, /\boccup[iy]/i,
 
                     // Other political/controversial spam
-                    /\bn[a4]z[i1]\b/i, /h[i1]tl[e3]r/i, /\btrump\b/i, /\bb[i1]d[e3]n\b/i,
-                    /\bput[i1]n\b/i, /z[e3]l[e3]nsk/i, /\bukra[i1]n/i, /\bruss[i1][a4]\b/i,
+                    /n[a4]z[i1]/i, /h[i1]tl[e3]r/i, /wh[i1]te.?power/i,
+                    /\btrump\b/i, /\bb[i1]d[e3]n\b/i, /\bput[i1]n\b/i,
+                    /z[e3]l[e3]nsk/i, /\bukra[i1]n/i, /\bruss[i1][a4]\b/i,
                     /comm?un[i1]st?/i, /f[a4]sc[i1]st?/i, /\bss\b/i, /\bkkk\b/i,
-                    /\bmaga\b/i, /\bantifa\b/i, /\bblm\b/i, /white.?suprem/i,
-                    /black.?lives/i, /all.?lives/i, /\bcoup\b/i, /\brebel/i,
 
-                    // Offensive content
-                    /\bsh[i1!]t\b/i, /\bf+u+c+k+/i, /\ba+ss+\b/i, /\bb[i1]tch/i,
-                    /\bn[i1]gg?[a4e3]/i, /\br[e3]t[a4]rd/i, /\bc+u+n+t+/i, /\bd[i1]ck\b/i,
-                    /\bwh[o0]r[e3]/i, /\bf[a4]g+[o0]?t?/i, /\bsl[u]t/i, /\bk[i1]k[e3]/i,
-                    /\bsp[i1]c\b/i, /\bch[i1]nk/i, /\bgook/i, /\btrann?y/i,
+                    // Offensive content (Stricter)
+                    /sh[i1!]t/i, /f+u+c+k+/i, /a+ss+/i, /b[i1]tch/i,
+                    /n[i1]gg?[a4e3]/i, /r[e3]t[a4]rd/i, /c+u+n+t+/i, /d[i1]ck/i,
+                    /wh[o0]r[e3]/i, /f[a4]g+[o0]?t?/i, /sl[u]t/i, /k[i1]k[e3]/i,
+                    /sp[i1]c/i, /ch[i1]nk/i, /gook/i, /trann?y/i,
 
-                    // Religious sensitivity
-                    /\ball[a4]h?\b/i, /\bj[i1]h[a4]d/i, /\bsh[a4]r[i1][a4]\b/i,
-                    /crusade/i, /infidel/i, /\bholy.?war/i, /\bkafir/i,
-
-                    // Other spam patterns
-                    /\bspam\b/i, /\btest\d+\b/i, /buy.?now/i, /free.?money/i,
-                    /subscribe/i, /follow.?me/i, /check.?out/i, /\bdm\s*me/i,
-                    /\bxxx/i, /\bporn/i, /\bsex\b/i, /\bviagra/i, /\bcrypto/i,
-                    /\bnft\b/i, /\bscam/i, /click.?here/i, /\bdeath\s*to/i,
-                    /\bkill\s*(all)?/i, /\bhate\b/i
+                    // Spam patterns
+                    /spam/i, /test.?spam/i, /test\d+/i,
+                    /buy.?now/i, /free.?money/i, /subscribe/i,
+                    /xxx/i, /porn/i, /sex/i, /viagra/i,
+                    /kill/i, /death/i, /hate/i
                 ],
 
                 // Normalization table for leet-speak and homoglyphs
