@@ -5670,7 +5670,7 @@
             // Initialize Firebase (only if config is set)
             let db = null;
             let firebaseEnabled = false;
-            const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+            const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.hostname === '';
 
             try {
                 if (firebaseConfig.apiKey && firebaseConfig.apiKey.startsWith("AIza")) {
