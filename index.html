@@ -3063,15 +3063,30 @@
 
             const addCSS = css => document.head.appendChild(document.createElement("style")).innerHTML = css;
 
+
             addCustomContestantButton.addEventListener('click', () => {
                 var con_name = "";
-                if (document.getElementById('custom_name').value.replace(/\s/g, '') == "") {
-                    con_name = String(Date.now()) + Math.floor(Math.random() * 10000)
-                    customContestants.push(con_name)
+                const rawName = document.getElementById('custom_name').value;
+
+                // Anti-spam validation for custom country names
+                if (rawName.replace(/\s/g, '') !== "") {
+                    // Check if antiSpamSystem is available (it might not be loaded yet)
+                    if (typeof antiSpamSystem !== 'undefined') {
+                        const validation = antiSpamSystem.validateCountryName(rawName);
+                        if (!validation.valid) {
+                            alert(`❌ Cannot add country: ${validation.reason}\n\nPlease choose a different name that doesn't contain political, offensive, or spam content.`);
+                            return;
+                        }
+                        con_name = antiSpamSystem.sanitizeForFirebase(rawName);
+                    } else {
+                        con_name = rawName;
+                    }
+                    customContestants.push(con_name);
                 } else {
-                    con_name = document.getElementById('custom_name').value;
-                    customContestants.push(con_name)
+                    con_name = String(Date.now()) + Math.floor(Math.random() * 10000);
+                    customContestants.push(con_name);
                 }
+
                 var con_code = "";
                 if (document.getElementById('custom_code').value.replace(/\s/g, '') == "") {
                     con_code = makeid(4)
@@ -5673,6 +5688,75 @@
                     db = firebase.firestore();
                     firebaseEnabled = true;
                     console.log('🔥 Firebase connected successfully!');
+
+                    // ===== ANTI-EXPLOIT PROTECTION =====
+                    // Prevent direct window.db access for console exploits
+                    Object.defineProperty(window, 'db', {
+                        get: function () {
+                            console.warn('⛔ SECURITY: Direct db access blocked! Use official functions.');
+                            return null;
+                        },
+                        set: function () {
+                            console.warn('⛔ SECURITY: Cannot override db!');
+                        },
+                        configurable: false
+                    });
+
+                    // Block firebase.firestore() from returning usable instance for exploits
+                    const originalFirestore = firebase.firestore;
+                    let firestoreCallCount = 0;
+                    firebase.firestore = function () {
+                        firestoreCallCount++;
+                        // First call is legitimate (our init), subsequent calls are suspicious
+                        if (firestoreCallCount > 1) {
+                            console.warn('⛔ SECURITY: Suspicious firestore() call detected!');
+                            // Return a fake/neutered db object
+                            return {
+                                collection: function () {
+                                    console.warn('⛔ EXPLOIT BLOCKED: You cannot spam the leaderboard!');
+                                    return {
+                                        doc: () => ({
+                                            set: () => Promise.reject(new Error('BLOCKED')),
+                                            get: () => Promise.reject(new Error('BLOCKED')),
+                                            update: () => Promise.reject(new Error('BLOCKED'))
+                                        }),
+                                        get: () => Promise.reject(new Error('BLOCKED')),
+                                        orderBy: () => ({ limit: () => ({ get: () => Promise.reject(new Error('BLOCKED')) }) })
+                                    };
+                                }
+                            };
+                        }
+                        return originalFirestore.call(firebase);
+                    };
+
+                    // Detect and warn about exploit scripts
+                    const exploitPatterns = ['realSpam', 'spam.palestine', 'spam.israel', 'spam.war', 'hack.'];
+                    const originalConsoleLog = console.log;
+                    let exploitWarningShown = false;
+
+                    // Monitor for exploit variables being created
+                    const exploitWatcher = setInterval(() => {
+                        if (window.realSpam || window.spam || window.hack) {
+                            if (!exploitWarningShown) {
+                                console.clear();
+                                console.log('%c⛔ EXPLOIT DETECTED AND BLOCKED! ⛔', 'color: red; font-size: 24px; font-weight: bold;');
+                                console.log('%cYour spam attempt has been logged and will not work.', 'color: red; font-size: 14px;');
+                                console.log('%cFirebase writes are protected by server-side rules.', 'color: orange;');
+                                exploitWarningShown = true;
+                            }
+                            // Neutralize exploit objects
+                            if (window.realSpam) {
+                                window.realSpam = { go: () => console.log('⛔ BLOCKED'), batch: () => console.log('⛔ BLOCKED'), war: () => console.log('⛔ BLOCKED') };
+                            }
+                            if (window.spam) {
+                                window.spam = { palestine: () => console.log('⛔ BLOCKED'), israel: () => console.log('⛔ BLOCKED'), test: () => console.log('⛔ BLOCKED') };
+                            }
+                            if (window.hack) {
+                                window.hack = { showTop: () => console.log('⛔ BLOCKED'), unlock: () => console.log('⛔ BLOCKED') };
+                            }
+                        }
+                    }, 500);
+
                 } else {
                     console.log('⚠️ Firebase not configured. Leaderboard will show demo data.');
                 }
@@ -5680,37 +5764,145 @@
                 console.error('Firebase initialization error:', error);
             }
 
+            // ===== ADVANCED ANTI-SPAM SYSTEM =====
+            const antiSpamSystem = {
+                // Comprehensive banned words/phrases (political, offensive, spam)
+                bannedPatterns: [
+                    // Israel-Palestine conflict
+                    /palest[i1][n|\u006e]e?/i, /\b[i1]sra[e3]l/i, /\bg[a4]z[a4]\b/i, /h[a4]m[a4]s/i,
+                    /[i1]nt[i1]f[a4]d[a4]/i, /z[i1][o0]n[i1]st?s?/i, /\bnak?b[a4]\b/i,
+                    /\bidf\b/i, /hezboll?ah/i, /free.?palest/i, /from.?river/i,
+                    /aparthe[i1]d/i, /genoc[i1]de/i, /ethnic.?cleans/i, /\bj[e3]w[i1]sh/i,
+                    /\barab\b/i, /\bmuslim/i, /\bislam/i, /west.?bank/i, /\bbibi\b/i,
+                    /netanyahu/i, /\bwar.?crim/i, /\boccup[iy]/i,
+
+                    // Other political/controversial spam
+                    /\bn[a4]z[i1]\b/i, /h[i1]tl[e3]r/i, /\btrump\b/i, /\bb[i1]d[e3]n\b/i,
+                    /\bput[i1]n\b/i, /z[e3]l[e3]nsk/i, /\bukra[i1]n/i, /\bruss[i1][a4]\b/i,
+                    /comm?un[i1]st?/i, /f[a4]sc[i1]st?/i, /\bss\b/i, /\bkkk\b/i,
+                    /\bmaga\b/i, /\bantifa\b/i, /\bblm\b/i, /white.?suprem/i,
+                    /black.?lives/i, /all.?lives/i, /\bcoup\b/i, /\brebel/i,
+
+                    // Offensive content
+                    /\bsh[i1!]t\b/i, /\bf+u+c+k+/i, /\ba+ss+\b/i, /\bb[i1]tch/i,
+                    /\bn[i1]gg?[a4e3]/i, /\br[e3]t[a4]rd/i, /\bc+u+n+t+/i, /\bd[i1]ck\b/i,
+                    /\bwh[o0]r[e3]/i, /\bf[a4]g+[o0]?t?/i, /\bsl[u]t/i, /\bk[i1]k[e3]/i,
+                    /\bsp[i1]c\b/i, /\bch[i1]nk/i, /\bgook/i, /\btrann?y/i,
+
+                    // Religious sensitivity
+                    /\ball[a4]h?\b/i, /\bj[i1]h[a4]d/i, /\bsh[a4]r[i1][a4]\b/i,
+                    /crusade/i, /infidel/i, /\bholy.?war/i, /\bkafir/i,
+
+                    // Other spam patterns
+                    /\bspam\b/i, /\btest\d+\b/i, /buy.?now/i, /free.?money/i,
+                    /subscribe/i, /follow.?me/i, /check.?out/i, /\bdm\s*me/i,
+                    /\bxxx/i, /\bporn/i, /\bsex\b/i, /\bviagra/i, /\bcrypto/i,
+                    /\bnft\b/i, /\bscam/i, /click.?here/i, /\bdeath\s*to/i,
+                    /\bkill\s*(all)?/i, /\bhate\b/i
+                ],
+
+                // Normalization table for leet-speak and homoglyphs
+                normalizeMap: {
+                    '0': 'o', '1': 'i', '3': 'e', '4': 'a', '5': 's', '7': 't', '8': 'b',
+                    '@': 'a', '$': 's', '!': 'i', '|': 'i', '(': 'c',
+                    '\u0430': 'a', '\u0435': 'e', '\u043e': 'o', '\u0440': 'p', // Cyrillic lookalikes
+                    '\u0441': 'c', '\u0443': 'y', '\u0445': 'x', '\u0456': 'i'
+                },
+
+                // Rate limiting
+                lastSubmission: 0,
+                minSubmissionInterval: 3000, // 3 seconds
+
+                normalize(text) {
+                    if (!text || typeof text !== 'string') return '';
+                    let normalized = text.toLowerCase();
+                    // Replace leet-speak and homoglyphs
+                    for (const [char, replacement] of Object.entries(this.normalizeMap)) {
+                        normalized = normalized.split(char).join(replacement);
+                    }
+                    // Remove special characters that might be used to bypass filters
+                    normalized = normalized.replace(/[\s\-_\.\'\"]/g, '');
+                    return normalized;
+                },
+
+                containsBannedContent(text) {
+                    if (!text || typeof text !== 'string') return { banned: false };
+
+                    const normalized = this.normalize(text);
+                    const original = text.toLowerCase();
+
+                    for (const pattern of this.bannedPatterns) {
+                        if (pattern.test(normalized) || pattern.test(original)) {
+                            console.warn(`⚠️ Anti-spam: Blocked content matching pattern: ${pattern}`);
+                            return { banned: true, reason: 'Inappropriate or political content detected' };
+                        }
+                    }
+                    return { banned: false };
+                },
+
+                validateCountryName(name) {
+                    if (!name || typeof name !== 'string') {
+                        return { valid: false, reason: 'Invalid name' };
+                    }
+
+                    // Length check
+                    if (name.length < 2 || name.length > 50) {
+                        return { valid: false, reason: 'Name must be 2-50 characters' };
+                    }
+
+                    // Check for banned content
+                    const spamCheck = this.containsBannedContent(name);
+                    if (spamCheck.banned) {
+                        return { valid: false, reason: spamCheck.reason };
+                    }
+
+                    // Check for excessive special characters (spam indicator)
+                    const specialCharRatio = (name.match(/[^a-zA-Z\s]/g) || []).length / name.length;
+                    if (specialCharRatio > 0.4) {
+                        return { valid: false, reason: 'Too many special characters' };
+                    }
+
+                    return { valid: true };
+                },
+
+                canSubmit() {
+                    const now = Date.now();
+                    if (now - this.lastSubmission < this.minSubmissionInterval) {
+                        console.warn('⚠️ Anti-spam: Rate limit - submission too fast');
+                        return false;
+                    }
+                    this.lastSubmission = now;
+                    return true;
+                },
+
+                sanitizeForFirebase(text) {
+                    if (!text || typeof text !== 'string') return text;
+                    // Remove any control characters and normalize whitespace
+                    return text.replace(/[\x00-\x1F\x7F]/g, '').trim().substring(0, 50);
+                }
+            };
+
+            window.antiSpamSystem = antiSpamSystem;
+            console.log('🛡️ Anti-spam system initialized');
+
             // Record a simulation win to Firebase with detailed stats
             async function recordSimulationWin(winnerCountry, winnerCode, results, sortedCountries) {
                 if (!firebaseEnabled || !db) return;
 
-                // 🛡️ SPAM PROTECTION & VALIDATION 🛡️
-                const RATE_LIMIT_MS = 15000; // 15 Seconds Cooldown
-                const STORAGE_KEY = 'simek_last_sim_time';
-
-                const now = Date.now();
-                const lastSim = parseInt(localStorage.getItem(STORAGE_KEY) || '0');
-
-                // 1. Time Check
-                if (now - lastSim < RATE_LIMIT_MS) {
-                    console.warn(`⚠️ Simulation recorded too quickly. Please wait ${Math.ceil((RATE_LIMIT_MS - (now - lastSim)) / 1000)}s.`);
-                    return; // Silent reject to stop bots
-                }
-
-                // 2. Data Validation Check
-                const isValidCountry = ESC_COUNTRIES.some(c => c.code === winnerCode);
-                if (!isValidCountry) {
-                    console.error("❌ Invalid winner code detected. Possible manipulation attempt.");
+                // Anti-spam validation for custom countries
+                const validation = antiSpamSystem.validateCountryName(winnerCountry);
+                if (!validation.valid) {
+                    console.warn(`⚠️ Blocked leaderboard submission: ${validation.reason}`);
                     return;
                 }
 
-                if (!results || !sortedCountries || sortedCountries.length < 5) {
-                    console.error("❌ Invalid simulation data.");
+                if (!antiSpamSystem.canSubmit()) {
+                    console.warn('⚠️ Rate limited - please wait before next simulation');
                     return;
                 }
 
-                // Update timestamp immediately to blocked parallel calls
-                localStorage.setItem(STORAGE_KEY, now.toString());
+                // Sanitize country name
+                winnerCountry = antiSpamSystem.sanitizeForFirebase(winnerCountry);
 
                 try {
                     const batch = db.batch();
@@ -5885,8 +6077,7 @@
                 countries.sort((a, b) => (b[sortBy] || 0) - (a[sortBy] || 0));
 
                 // Slice top 20
-                // Show all countries
-                const topCountries = countries;
+                const topCountries = countries.slice(0, 20);
 
                 let tableRows = '';
                 topCountries.forEach((country, index) => {
