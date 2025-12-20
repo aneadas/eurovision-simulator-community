@@ -5728,6 +5728,9 @@
                         }
                         return originalFirestore.call(firebase);
                     };
+                    // Restore static properties lost during proxying
+                    firebase.firestore.FieldValue = originalFirestore.FieldValue;
+                    firebase.firestore.Timestamp = originalFirestore.Timestamp;
 
                     // Detect and warn about exploit scripts
                     const exploitPatterns = ['realSpam', 'spam.palestine', 'spam.israel', 'spam.war', 'hack.'];
@@ -5906,6 +5909,8 @@
 
                 try {
                     const batch = db.batch();
+                    const currentUser = firebase.auth().currentUser;
+                    const userId = currentUser ? currentUser.uid : 'anonymous';
 
                     // 1. Overall Winner
                     const winnerRef = db.collection('leaderboard').doc(winnerCode);
@@ -5913,7 +5918,8 @@
                         country: winnerCountry,
                         code: winnerCode,
                         wins: firebase.firestore.FieldValue.increment(1),
-                        lastWin: new Date().toISOString()
+                        lastWin: firebase.firestore.FieldValue.serverTimestamp(),
+                        lastUser: userId
                     }, { merge: true });
 
                     // 2. Jury Winner (Calculate from results)
@@ -5931,7 +5937,8 @@
                         batch.set(juryRef, {
                             country: juryWinner,
                             code: juryCode,
-                            juryWins: firebase.firestore.FieldValue.increment(1)
+                            juryWins: firebase.firestore.FieldValue.increment(1),
+                            lastUser: userId
                         }, { merge: true });
 
                         // 3. Televote Winner
@@ -5948,7 +5955,8 @@
                         batch.set(teleRef, {
                             country: teleWinner,
                             code: teleCode,
-                            teleWins: firebase.firestore.FieldValue.increment(1)
+                            teleWins: firebase.firestore.FieldValue.increment(1),
+                            lastUser: userId
                         }, { merge: true });
 
                         // 4. Last Place (Wooden Spoon)
@@ -5958,7 +5966,8 @@
                         batch.set(lastRef, {
                             country: lastPlace,
                             code: lastCode,
-                            lastPlaces: firebase.firestore.FieldValue.increment(1)
+                            lastPlaces: firebase.firestore.FieldValue.increment(1),
+                            lastUser: userId
                         }, { merge: true });
                     }
 
@@ -5978,7 +5987,7 @@
                         // Simply running a separate update is safer for now.
                         userRef.set({
                             simulations: firebase.firestore.FieldValue.increment(1),
-                            lastSimulation: new Date().toISOString()
+                            lastSimulation: firebase.firestore.FieldValue.serverTimestamp()
                         }, { merge: true }).catch(err => console.error("Error updating user stats:", err));
                     }
 
