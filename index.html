@@ -746,354 +746,6 @@
             color: var(--aq-label-text);
             font-style: italic;
         }
-
-        /* ===== CHRISTMAS DECORATIONS ===== */
-
-        /* Snowflakes Container */
-        .snowflakes {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 9999;
-            overflow: hidden;
-        }
-
-        .snowflake {
-            position: absolute;
-            top: -20px;
-            color: #fff;
-            font-size: 1.5em;
-            text-shadow: 0 0 5px rgba(255, 255, 255, 0.8);
-            animation: snowfall linear infinite;
-            opacity: 0.9;
-        }
-
-        @keyframes snowfall {
-            0% {
-                transform: translateY(0) rotate(0deg);
-            }
-
-            100% {
-                transform: translateY(100vh) rotate(360deg);
-            }
-        }
-
-        /* Christmas Lights */
-        .christmas-lights {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 40px;
-            display: flex;
-            justify-content: center;
-            align-items: flex-start;
-            z-index: 10000;
-            pointer-events: none;
-        }
-
-        .lights-wire {
-            position: absolute;
-            top: 8px;
-            width: 100%;
-            height: 3px;
-            background: linear-gradient(90deg, #2d5016 0%, #1a3009 50%, #2d5016 100%);
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-        }
-
-        .light-bulb {
-            position: relative;
-            width: 16px;
-            height: 22px;
-            margin: 0 18px;
-            border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
-            animation: glow 1s ease-in-out infinite alternate;
-            top: 10px;
-        }
-
-        .light-bulb::before {
-            content: '';
-            position: absolute;
-            top: -6px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 8px;
-            height: 8px;
-            background: #4a4a4a;
-            border-radius: 2px;
-        }
-
-        .light-bulb.red {
-            background: #ff3333;
-            box-shadow: 0 0 15px #ff3333, 0 0 30px #ff3333;
-        }
-
-        .light-bulb.green {
-            background: #33ff33;
-            box-shadow: 0 0 15px #33ff33, 0 0 30px #33ff33;
-            animation-delay: 0.2s;
-        }
-
-        .light-bulb.blue {
-            background: #3399ff;
-            box-shadow: 0 0 15px #3399ff, 0 0 30px #3399ff;
-            animation-delay: 0.4s;
-        }
-
-        .light-bulb.yellow {
-            background: #ffcc00;
-            box-shadow: 0 0 15px #ffcc00, 0 0 30px #ffcc00;
-            animation-delay: 0.6s;
-        }
-
-        .light-bulb.pink {
-            background: #ff66cc;
-            box-shadow: 0 0 15px #ff66cc, 0 0 30px #ff66cc;
-            animation-delay: 0.8s;
-        }
-
-        @keyframes glow {
-            0% {
-                opacity: 0.6;
-                filter: brightness(0.8);
-            }
-
-            100% {
-                opacity: 1;
-                filter: brightness(1.3);
-            }
-        }
-
-        /* Christmas Banner */
-        .christmas-banner {
-            background: linear-gradient(135deg, #c41e3a 0%, #1a472a 50%, #c41e3a 100%);
-            color: #fff;
-            padding: 15px 20px;
-            text-align: center;
-            font-size: 1.3rem;
-            font-weight: bold;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
-            border-radius: 10px;
-            margin-bottom: 20px;
-            margin-top: 35px;
-            animation: bannerShimmer 3s ease-in-out infinite;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-        }
-
-        @keyframes bannerShimmer {
-
-            0%,
-            100% {
-                background-position: 0% 50%;
-            }
-
-            50% {
-                background-position: 100% 50%;
-            }
-        }
-
-        .christmas-banner .emoji {
-            font-size: 1.5rem;
-            margin: 0 10px;
-        }
-
-        /* Festive title enhancement */
-        .eurovision-simulator h1 {
-            position: relative;
-        }
-
-        .eurovision-simulator h1::before {
-            content: '🎄';
-            margin-right: 15px;
-        }
-
-        .eurovision-simulator h1::after {
-            content: '🎄';
-            margin-left: 15px;
-        }
-
-        /* Snow on cards */
-        .menu-card,
-        .settings-card {
-            position: relative;
-        }
-
-        .menu-card::before,
-        .settings-card::before {
-            content: '❄️';
-            position: absolute;
-            top: -10px;
-            left: 10px;
-            font-size: 1.2rem;
-            animation: snowSpin 4s linear infinite;
-        }
-
-        .menu-card::after,
-        .settings-card::after {
-            content: '❄️';
-            position: absolute;
-            top: -10px;
-            right: 10px;
-            font-size: 1.2rem;
-            animation: snowSpin 4s linear infinite reverse;
-        }
-
-        @keyframes snowSpin {
-            from {
-                transform: rotate(0deg);
-            }
-
-            to {
-                transform: rotate(360deg);
-            }
-        }
-
-        /* Hide Christmas elements when disabled */
-        body:not(.christmas-enabled) .eurovision-simulator h1::before,
-        body:not(.christmas-enabled) .eurovision-simulator h1::after {
-            content: '';
-        }
-
-        body:not(.christmas-enabled) .menu-card::before,
-        body:not(.christmas-enabled) .menu-card::after,
-        body:not(.christmas-enabled) .settings-card::before,
-        body:not(.christmas-enabled) .settings-card::after {
-            content: '';
-        }
-
-        /* ===== ADVENT CALENDAR STYLES ===== */
-        .advent-calendar-grid {
-            display: grid;
-            grid-template-columns: repeat(6, 1fr);
-            gap: 10px;
-            padding: 20px;
-            background: linear-gradient(135deg, #1a472a 0%, #2d5a3d 50%, #1a472a 100%);
-            border-radius: 15px;
-        }
-
-        .advent-door {
-            aspect-ratio: 1;
-            background: linear-gradient(135deg, #8B0000 0%, #c41e3a 50%, #8B0000 100%);
-            border: 3px solid #FFD700;
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.5rem;
-            font-weight: bold;
-            color: #FFD700;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            position: relative;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-        }
-
-        .advent-door:hover:not(.opened):not(.locked) {
-            transform: scale(1.05);
-            box-shadow: 0 6px 15px rgba(255, 215, 0, 0.5);
-        }
-
-        .advent-door.locked {
-            background: linear-gradient(135deg, #444 0%, #666 50%, #444 100%);
-            border-color: #888;
-            color: #888;
-            cursor: not-allowed;
-        }
-
-        .advent-door.locked::after {
-            content: '🔒';
-            position: absolute;
-            top: 5px;
-            right: 5px;
-            font-size: 0.8rem;
-        }
-
-        .advent-door.opened {
-            background: linear-gradient(135deg, #2d5a3d 0%, #3d7a4d 50%, #2d5a3d 100%);
-            border-color: #90EE90;
-            animation: doorOpen 0.5s ease;
-        }
-
-        .advent-door.today:not(.opened) {
-            animation: todayPulse 2s ease-in-out infinite;
-            border-color: #fff;
-        }
-
-        @keyframes doorOpen {
-            0% {
-                transform: rotateY(0deg);
-            }
-
-            50% {
-                transform: rotateY(90deg);
-            }
-
-            100% {
-                transform: rotateY(0deg);
-            }
-        }
-
-        @keyframes todayPulse {
-
-            0%,
-            100% {
-                box-shadow: 0 0 10px #FFD700, 0 0 20px #FFD700;
-            }
-
-            50% {
-                box-shadow: 0 0 20px #FFD700, 0 0 40px #FFD700, 0 0 60px #FFD700;
-            }
-        }
-
-        .advent-content {
-            text-align: center;
-            padding: 20px;
-        }
-
-        .advent-content .country-reveal {
-            font-size: 3rem;
-            margin-bottom: 10px;
-        }
-
-        .advent-content .country-name {
-            font-size: 1.5rem;
-            font-weight: bold;
-            color: #2989d8;
-            margin-bottom: 10px;
-        }
-
-        .advent-content .fun-fact {
-            font-style: italic;
-            color: #666;
-            padding: 15px;
-            background: #f8f9fa;
-            border-radius: 10px;
-            margin-top: 10px;
-        }
-
-        .advent-stats {
-            display: flex;
-            justify-content: space-around;
-            padding: 15px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 10px;
-            margin-top: 15px;
-            color: #fff;
-        }
-
-        .advent-stats div {
-            text-align: center;
-        }
-
-        .advent-stats .stat-number {
-            font-size: 2rem;
-            font-weight: bold;
-            color: #FFD700;
-        }
-
         /* Leaderboard Tabs */
         .leaderboard-tabs {
             display: flex;
@@ -1253,45 +905,6 @@
                 transform: rotate(360deg);
             }
         }
-
-        .snowflake {
-            position: fixed;
-            top: -10px;
-            z-index: 1000;
-            /* Ensure it is BELOW bootstrap modals (1050+) */
-            pointer-events: none;
-            color: #FFF;
-            text-shadow: 0 0 5px rgba(255, 255, 255, 0.8);
-            user-select: none;
-            cursor: default;
-            animation-name: fall, shake;
-            animation-timing-function: linear, ease-in-out;
-            animation-iteration-count: infinite, infinite;
-        }
-
-        @keyframes fall {
-            0% {
-                top: -10%
-            }
-
-            100% {
-                top: 100%
-            }
-        }
-
-        @keyframes shake {
-            0% {
-                transform: translateX(0px)
-            }
-
-            50% {
-                transform: translateX(80px)
-            }
-
-            100% {
-                transform: translateX(0px)
-            }
-        }
     </style>
 </head>
 
@@ -1321,33 +934,6 @@
             border: 1px solid #0a58ca;
         }
     </style>
-    <!-- Christmas Lights -->
-    <div class="christmas-lights">
-        <div class="lights-wire"></div>
-        <div class="light-bulb red"></div>
-        <div class="light-bulb green"></div>
-        <div class="light-bulb blue"></div>
-        <div class="light-bulb yellow"></div>
-        <div class="light-bulb pink"></div>
-        <div class="light-bulb red"></div>
-        <div class="light-bulb green"></div>
-        <div class="light-bulb blue"></div>
-        <div class="light-bulb yellow"></div>
-        <div class="light-bulb pink"></div>
-        <div class="light-bulb red"></div>
-        <div class="light-bulb green"></div>
-        <div class="light-bulb blue"></div>
-        <div class="light-bulb yellow"></div>
-        <div class="light-bulb pink"></div>
-        <div class="light-bulb red"></div>
-        <div class="light-bulb green"></div>
-        <div class="light-bulb blue"></div>
-        <div class="light-bulb yellow"></div>
-        <div class="light-bulb pink"></div>
-    </div>
-
-    <!-- Snowflakes -->
-    <div class="snowflakes" id="snowflakes"></div>
 
     <!-- Welcome Modal -->
     <div class="modal fade" id="welcomeModal" tabindex="-1" aria-labelledby="welcomeModalLabel" aria-hidden="true"
@@ -1551,15 +1137,6 @@
     <div class="eurovision-simulator container-fluid">
         <h1 class="text-center mb-4">YOUR VERY OWN EUROVISION SIMULATOR</h1>
 
-        <!-- Christmas Banner -->
-        <div class="christmas-banner">
-            <span class="emoji">🎅</span>
-            Merry Christmas & Happy Holidays!
-            <span class="emoji">🎁</span>
-            Season's Greetings!
-            <span class="emoji">☃️</span>
-        </div>
-
         <div class="row mb-4">
             <div class="col-12">
                 <div class="card menu-card">
@@ -1588,8 +1165,6 @@
                         <hr class="dropdown-divider mb-3" style="border-top: 1px solid rgba(255,255,255,0.2);">
 
                         <button id="toggleDarkMode" class="btn btn-secondary mb-2">DARK MODE</button>
-                        <button id="toggleChristmas" class="btn btn-danger mb-2">🎄 CHRISTMAS MODE</button>
-                        <button id="adventCalendarButton" class="btn btn-success mb-2">📅 ADVENT CALENDAR</button>
                         <button id="leaderboardButton" class="btn btn-warning mb-2">🏆 LEADERBOARD</button>
                         <button id="userLeaderboardButton" class="btn btn-primary mb-2"
                             style="background: #6f42c1; border-color: #6f42c1;">👤 USER LEADERBOARD</button>
@@ -2043,90 +1618,24 @@
             const chartContainer = document.createElement('div');
             chartContainer.id = 'chartContainer';
             document.querySelector('.eurovision-simulator').appendChild(chartContainer);
-            const currentContestants = [
-                "Albania", "Armenia", "Australia", "Austria", "Azerbaijan", "Belgium", "Bulgaria", "Croatia", "Cyprus", "Czechia",
-                "Denmark", "Estonia", "Finland", "France", "Georgia", "Germany", "Greece", "Iceland", "Ireland", "Israel", "Italy",
-                "Latvia", "Lithuania", "Luxembourg", "Malta", "Moldova", "Montenegro", "Netherlands", "North Macedonia", "Norway",
-                "Poland", "Portugal", "Romania", "San Marino", "Serbia", "Slovenia", "Spain", "Sweden", "Switzerland", "Ukraine",
-                "United Kingdom"
-            ];
 
-            // Old Contestants (Former Participants)
-            const oldContestants = [
-                "Andorra", "Belarus", "Bosnia & Herz.", "Hungary", "Monaco", "Morocco", "Russia", "Slovakia", "Turkey"
-            ];
-
-            // Rest of Europe (Non-EU/Non-Eurovision)
-            const restEuropeContestants = [
-                "Liechtenstein", "Kosovo", "Vatican City", "Faroe Islands", "Greenland"
-            ];
-
-            // North America
-            const northAmericaContestants = [
-                "Antigua and Barbuda", "Bahamas", "Barbados", "Belize", "Canada", "Costa Rica", "Cuba", "Dominica", "Dominican Republic",
-                "El Salvador", "Grenada", "Guatemala", "Haiti", "Honduras", "Jamaica", "Mexico", "Nicaragua", "Panama",
-                "Saint Kitts and Nevis", "Saint Lucia", "Saint Vincent and the Grenadines", "Trinidad and Tobago", "United States"
-            ];
-
-            // South America
-            const southAmericaContestants = [
-                "Argentina", "Bolivia", "Brazil", "Chile", "Colombia", "Ecuador", "Guyana", "Paraguay", "Peru", "Suriname", "Uruguay", "Venezuela"
-            ];
-
-            // Africa (without Morocco)
-            const africaContestants = [
-                "Algeria", "Angola", "Benin", "Botswana", "Burkina Faso", "Burundi", "Cabo Verde", "Cameroon", "Central African Republic",
-                "Chad", "Comoros", "Congo", "Democratic Republic of the Congo", "Djibouti",
-                "Egypt", "Equatorial Guinea", "Eritrea", "Eswatini", "Ethiopia", "Gabon", "Gambia", "Ghana", "Guinea", "Guinea-Bissau",
-                "Ivory Coast", "Kenya", "Lesotho", "Liberia", "Libya", "Madagascar", "Malawi", "Mali", "Mauritania", "Mauritius",
-                "Mozambique", "Namibia", "Niger", "Nigeria", "Rwanda", "São Tomé and Príncipe", "Senegal", "Seychelles",
-                "Sierra Leone", "Somalia", "South Africa", "South Sudan", "Sudan", "Tanzania", "Togo", "Tunisia", "Uganda", "Zambia", "Zimbabwe"
-            ];
-
-            // Asia (without Armenia, Azerbaijan, Cyprus, Georgia, Israel)
-            const asiaContestants = [
-                "Afghanistan", "Bahrain", "Bangladesh", "Bhutan", "Brunei", "Cambodia", "China", "India", "Indonesia",
-                "Iran", "Iraq", "Japan", "Jordan", "Kazakhstan", "Kuwait", "Kyrgyzstan", "Laos", "Lebanon", "Malaysia",
-                "Maldives", "Mongolia", "Myanmar", "Nepal", "North Korea", "Oman", "Pakistan", "Palestine", "Philippines",
-                "Qatar", "Saudi Arabia", "Singapore", "South Korea", "Sri Lanka", "Syria", "Taiwan", "Tajikistan", "Thailand",
-                "Timor-Leste", "Turkmenistan", "United Arab Emirates", "Uzbekistan", "Vietnam", "Yemen"
-            ];
-
-            // Oceania (without Australia)
-            const oceaniaContestants = [
-                "Fiji", "Kiribati", "Marshall Islands", "Micronesia", "Nauru", "New Zealand", "Palau", "Papua New Guinea",
-                "Samoa", "Solomon Islands", "Tonga", "Tuvalu", "Vanuatu"
-            ];
-
-            var customContestants = []
-
-            var customContestantsFlag = []
-
-            //
-            // Consolidate all predefined country lists into a single object.  This makes it
-            // easy to iterate over them later when building the tables.  Keeping these
-            // mappings in one place also makes it trivial to add or remove categories
-            // without duplicating calls to `createCountryTable` for each new list.
-            //
-            const contestantLists = {
-                currentContestants,
-                oldContestants,
-                restEuropeContestants,
-                northAmericaContestants,
-                southAmericaContestants,
-                africaContestants,
-                asiaContestants,
-                oceaniaContestants,
-                customContestants,
-            };
-
-            const genres = ["Pop", "Disco", "Dark Pop", "Pop Ballad", "Power Ballad", "Folk", "Country", "Jazz", "Rock", "Punk", "Heavy Metal", "Techno", "Rap"];
+            // Data will be loaded from data.json
+            let currentContestants = [];
+            let oldContestants = [];
+            let restEuropeContestants = [];
+            let northAmericaContestants = [];
+            let southAmericaContestants = [];
+            let africaContestants = [];
+            let asiaContestants = [];
+            let oceaniaContestants = [];
+            var customContestants = [];
+            var customContestantsFlag = [];
+            let genres = [];
+            let scenographies = [];
             let genreLikeability = {};
-            genres.forEach(genre => genreLikeability[genre] = 3);
-
-            const scenographies = ["Minimal", "LED Screens", "Props", "Dancers", "Pyrotechnics", "Stage Levels", "Projections", "Interactive", "Classical", "Abstract"];
             let scenographyLikeability = {};
-            scenographies.forEach(scenography => scenographyLikeability[scenography] = 3);
+            let contestantLists = {};
+            let countryCodeMapData = {};
 
             function randomizeGenreLikeability() {
                 genres.forEach(genre => {
@@ -2159,64 +1668,7 @@
             var customcountryCodeMap = {}
 
             function getCountryCode(countryName) {
-                const countryCodeMap = {
-                    // Current Contestants (Europe)
-                    "Albania": "al", "Armenia": "am", "Australia": "au", "Austria": "at", "Azerbaijan": "az",
-                    "Belgium": "be", "Bulgaria": "bg", "Croatia": "hr", "Cyprus": "cy", "Czechia": "cz",
-                    "Denmark": "dk", "Estonia": "ee", "Finland": "fi", "France": "fr", "Georgia": "ge",
-                    "Germany": "de", "Greece": "gr", "Iceland": "is", "Ireland": "ie", "Israel": "il",
-                    "Italy": "it", "Latvia": "lv", "Lithuania": "lt", "Luxembourg": "lu", "Malta": "mt",
-                    "Moldova": "md", "Montenegro": "me", "Netherlands": "nl", "North Macedonia": "mk", "Norway": "no",
-                    "Poland": "pl", "Portugal": "pt", "Romania": "ro", "San Marino": "sm", "Serbia": "rs",
-                    "Slovenia": "si", "Spain": "es", "Sweden": "se", "Switzerland": "ch", "Ukraine": "ua",
-                    "United Kingdom": "gb",
-
-                    // Old Contestants
-                    "Andorra": "ad", "Belarus": "by", "Bosnia & Herz.": "ba", "Hungary": "hu", "Monaco": "mc",
-                    "Morocco": "ma", "Russia": "ru", "Slovakia": "sk", "Turkey": "tr",
-
-                    // Rest of Europe
-                    "Liechtenstein": "li", "Kosovo": "xk", "Vatican City": "va", "Faroe Islands": "fo", "Greenland": "gl",
-
-                    // North America
-                    "Antigua and Barbuda": "ag", "Bahamas": "bs", "Barbados": "bb", "Belize": "bz", "Canada": "ca",
-                    "Costa Rica": "cr", "Cuba": "cu", "Dominica": "dm", "Dominican Republic": "do", "El Salvador": "sv",
-                    "Grenada": "gd", "Guatemala": "gt", "Haiti": "ht", "Honduras": "hn", "Jamaica": "jm",
-                    "Mexico": "mx", "Nicaragua": "ni", "Panama": "pa", "Saint Kitts and Nevis": "kn",
-                    "Saint Lucia": "lc", "Saint Vincent and the Grenadines": "vc", "Trinidad and Tobago": "tt", "United States": "us",
-
-                    // South America
-                    "Argentina": "ar", "Bolivia": "bo", "Brazil": "br", "Chile": "cl", "Colombia": "co",
-                    "Ecuador": "ec", "Guyana": "gy", "Paraguay": "py", "Peru": "pe", "Suriname": "sr", "Uruguay": "uy", "Venezuela": "ve",
-
-                    // Africa
-                    "Algeria": "dz", "Angola": "ao", "Benin": "bj", "Botswana": "bw", "Burkina Faso": "bf",
-                    "Burundi": "bi", "Cabo Verde": "cv", "Cameroon": "cm", "Central African Republic": "cf", "Chad": "td",
-                    "Comoros": "km", "Congo": "cg", "Democratic Republic of the Congo": "cd", "Djibouti": "dj", "Egypt": "eg",
-                    "Equatorial Guinea": "gq", "Eritrea": "er", "Eswatini": "sz", "Ethiopia": "et", "Gabon": "ga", "Gambia": "gm",
-                    "Ghana": "gh", "Guinea": "gn", "Guinea-Bissau": "gw", "Ivory Coast": "ci", "Kenya": "ke",
-                    "Lesotho": "ls", "Liberia": "lr", "Libya": "ly", "Madagascar": "mg", "Malawi": "mw", "Mali": "ml",
-                    "Mauritania": "mr", "Mauritius": "mu", "Mozambique": "mz", "Namibia": "na", "Niger": "ne", "Nigeria": "ng",
-                    "Rwanda": "rw", "São Tomé and Príncipe": "st", "Senegal": "sn", "Seychelles": "sc", "Sierra Leone": "sl",
-                    "Somalia": "so", "South Africa": "za", "South Sudan": "ss", "Sudan": "sd", "Tanzania": "tz", "Togo": "tg",
-                    "Tunisia": "tn", "Uganda": "ug", "Zambia": "zm", "Zimbabwe": "zw",
-
-                    // Asia
-                    "Afghanistan": "af", "Bahrain": "bh", "Bangladesh": "bd", "Bhutan": "bt", "Brunei": "bn",
-                    "Cambodia": "kh", "China": "cn", "India": "in", "Indonesia": "id", "Iran": "ir", "Iraq": "iq", "Japan": "jp",
-                    "Jordan": "jo", "Kazakhstan": "kz", "Kuwait": "kw", "Kyrgyzstan": "kg", "Laos": "la", "Lebanon": "lb",
-                    "Malaysia": "my", "Maldives": "mv", "Mongolia": "mn", "Myanmar": "mm", "Nepal": "np", "North Korea": "kp",
-                    "Oman": "om", "Pakistan": "pk", "Palestine": "ps", "Philippines": "ph", "Qatar": "qa", "Saudi Arabia": "sa",
-                    "Singapore": "sg", "South Korea": "kr", "Sri Lanka": "lk", "Syria": "sy", "Taiwan": "tw", "Tajikistan": "tj",
-                    "Thailand": "th", "Timor-Leste": "tl", "Turkmenistan": "tm", "United Arab Emirates": "ae", "Uzbekistan": "uz",
-                    "Vietnam": "vn", "Yemen": "ye",
-
-                    // Oceania (without Australia)
-                    "Fiji": "fj", "Kiribati": "ki", "Marshall Islands": "mh", "Micronesia": "fm", "Nauru": "nr",
-                    "New Zealand": "nz", "Palau": "pw", "Papua New Guinea": "pg", "Samoa": "ws", "Solomon Islands": "sb",
-                    "Tonga": "to", "Tuvalu": "tv", "Vanuatu": "vu"
-                };
-                return (countryCodeMap[countryName] || customcountryCodeMap[countryName]) || "unknown";
+                return (countryCodeMapData[countryName] || customcountryCodeMap[countryName]) || "unknown";
             }
 
             function createCountryTable(containerId, countries) {
@@ -2272,13 +1724,58 @@
             }
 
 
-            // Build all country tables by iterating over the consolidated lists.
-            // Using Object.entries allows us to dynamically generate each table without
-            // repeating nearly identical calls for each category.  If a new region is
-            // added to `contestantLists`, it will automatically be rendered here.
-            Object.entries(contestantLists).forEach(([tableId, list]) => {
-                createCountryTable(tableId, list);
-            });
+            // Load data from external JSON file
+            async function loadData() {
+                try {
+                    const response = await fetch('data.json');
+                    const data = await response.json();
+                    
+                    // Assign loaded data to variables
+                    currentContestants = data.currentContestants;
+                    oldContestants = data.oldContestants;
+                    restEuropeContestants = data.restEuropeContestants;
+                    northAmericaContestants = data.northAmericaContestants;
+                    southAmericaContestants = data.southAmericaContestants;
+                    africaContestants = data.africaContestants;
+                    asiaContestants = data.asiaContestants;
+                    oceaniaContestants = data.oceaniaContestants;
+                    genres = data.genres;
+                    scenographies = data.scenographies;
+                    countryCodeMapData = data.countryCodeMap;
+                    ESC_COUNTRIES = data.ESC_COUNTRIES;
+                    AVAILABLE_TAGS = data.AVAILABLE_TAGS;
+                    
+                    // Initialize likeability objects
+                    genres.forEach(genre => genreLikeability[genre] = 3);
+                    scenographies.forEach(scenography => scenographyLikeability[scenography] = 3);
+                    
+                    // Consolidate contestant lists
+                    contestantLists = {
+                        currentContestants,
+                        oldContestants,
+                        restEuropeContestants,
+                        northAmericaContestants,
+                        southAmericaContestants,
+                        africaContestants,
+                        asiaContestants,
+                        oceaniaContestants,
+                        customContestants,
+                    };
+                    
+                    // Build all country tables
+                    Object.entries(contestantLists).forEach(([tableId, list]) => {
+                        createCountryTable(tableId, list);
+                    });
+                    
+                    console.log('✅ Data loaded successfully from data.json');
+                } catch (error) {
+                    console.error('❌ Error loading data.json:', error);
+                    alert('Failed to load country data. Please refresh the page.');
+                }
+            }
+            
+            // Initialize app after data is loaded
+            loadData();
 
 
             const generateButton = document.getElementById('generateButton');
@@ -2625,6 +2122,12 @@
                 let previousVotingCountry = null;
                 const votedCountries = new Set(); // Track countries that have completed jury voting
 
+                // ===== CENTRAL STATE: all scoring lives here, NOT in the DOM =====
+                const scoreBoard = {};
+                competingCountries.forEach(country => {
+                    scoreBoard[country] = { juryPoints: 0, telePoints: 0, totalPoints: 0 };
+                });
+
                 // Sort countries by jury points for televoting reveal (lowest to highest)
                 const sortedByJuryPoints = [...competingCountries].sort((a, b) => {
                     const aJuryPoints = results[a].juryTotal || 0;
@@ -2697,6 +2200,18 @@
     `;
                 document.head.appendChild(style);
 
+                // Push scoreBoard state into DOM cells (one-way: state → DOM)
+                function renderScores() {
+                    competingCountries.forEach(country => {
+                        const row = document.querySelector(`.eurovision-table tr[data-country="${country}"]`);
+                        if (!row) return;
+                        const s = scoreBoard[country];
+                        row.querySelector('.jury-points').textContent = s.juryPoints;
+                        row.querySelector('.tele-points').textContent = s.telePoints;
+                        row.querySelector('.total-column').textContent = s.totalPoints;
+                    });
+                }
+
                 function updateTable(callback = null) {
                     const topTableBody = document.querySelector('#topHalfTable tbody');
                     const bottomTableBody = document.querySelector('#bottomHalfTable tbody');
@@ -2704,6 +2219,9 @@
                         console.error('One or both table bodies not found');
                         return;
                     }
+
+                    // First push latest state to DOM
+                    renderScores();
 
                     const topRows = Array.from(topTableBody.querySelectorAll('tr'));
                     const bottomRows = Array.from(bottomTableBody.querySelectorAll('tr'));
@@ -2713,10 +2231,10 @@
                     const topPositions = new Map(topRows.map((row, index) => [row.dataset.country, index]));
                     const bottomPositions = new Map(bottomRows.map((row, index) => [row.dataset.country, index]));
 
-                    // Sort all rows based on total points
+                    // Sort all rows based on scoreBoard state (NOT DOM)
                     allRows.sort((a, b) => {
-                        const aTotal = parseInt(a.querySelector('.total-column').textContent) || 0;
-                        const bTotal = parseInt(b.querySelector('.total-column').textContent) || 0;
+                        const aTotal = scoreBoard[a.dataset.country]?.totalPoints || 0;
+                        const bTotal = scoreBoard[b.dataset.country]?.totalPoints || 0;
                         if (aTotal !== bTotal) {
                             return bTotal - aTotal;
                         }
@@ -2795,17 +2313,16 @@
                         const sortedVotes = Object.entries(juryVotes).sort((a, b) => a[1] - b[1]);
 
                         sortedVotes.forEach(([receiver, points]) => {
+                            // Update state first
+                            if (scoreBoard[receiver]) {
+                                scoreBoard[receiver].juryPoints += points;
+                                scoreBoard[receiver].totalPoints = scoreBoard[receiver].juryPoints + scoreBoard[receiver].telePoints;
+                            }
+
+                            // Then update DOM display elements (current jury indicator)
                             const receiverRow = document.querySelector(`.eurovision-table tr[data-country="${receiver}"]`);
                             if (receiverRow) {
-                                const juryPointsCell = receiverRow.querySelector('.jury-points');
                                 const currentJuryCell = receiverRow.querySelector('.current-jury');
-                                const totalPointsCell = receiverRow.querySelector('.total-column');
-                                const currentJuryPoints = parseInt(juryPointsCell.textContent) || 0;
-                                const newJuryPoints = currentJuryPoints + points;
-                                juryPointsCell.textContent = newJuryPoints;
-                                totalPointsCell.textContent = newJuryPoints;
-
-                                // Update Current Jury column with colored backgrounds
                                 let className = 'current-jury';
                                 if (points === 8) className += ' jury-points-8';
                                 else if (points === 10) className += ' jury-points-10';
@@ -2870,14 +2387,10 @@
 
                         const row = document.querySelector(`.eurovision-table tr[data-country="${country}"]`);
                         if (row) {
-                            const telePointsCell = row.querySelector('.tele-points');
-                            const totalPointsCell = row.querySelector('.total-column');
-                            const juryPointsCell = row.querySelector('.jury-points');
+                            // Update state first
                             const telePoints = results[country].teleTotal;
-
-                            telePointsCell.textContent = telePoints;
-                            const totalPoints = (parseInt(juryPointsCell.textContent) || 0) + telePoints;
-                            totalPointsCell.textContent = totalPoints;
+                            scoreBoard[country].telePoints = telePoints;
+                            scoreBoard[country].totalPoints = scoreBoard[country].juryPoints + telePoints;
 
                             // Highlight the row to indicate televoting points have been added
                             row.classList.add('televoted');
@@ -3066,19 +2579,8 @@
                 var con_name = "";
                 const rawName = document.getElementById('custom_name').value;
 
-                // Anti-spam validation for custom country names
                 if (rawName.replace(/\s/g, '') !== "") {
-                    // Check if antiSpamSystem is available (it might not be loaded yet)
-                    if (typeof antiSpamSystem !== 'undefined') {
-                        const validation = antiSpamSystem.validateCountryName(rawName);
-                        if (!validation.valid) {
-                            alert(`❌ Cannot add country: ${validation.reason}\n\nPlease choose a different name that doesn't contain political, offensive, or spam content.`);
-                            return;
-                        }
-                        con_name = antiSpamSystem.sanitizeForFirebase(rawName);
-                    } else {
-                        con_name = rawName;
-                    }
+                    con_name = rawName.trim().substring(0, 50);
                     customContestants.push(con_name);
                 } else {
                     con_name = String(Date.now()) + Math.floor(Math.random() * 10000);
@@ -4661,10 +4163,28 @@
 
                 dynamicVotingArea.innerHTML = html;
 
+                // ===== CENTRAL STATE: all scoring lives here, NOT in the DOM =====
+                const escScoreBoard = {};
+                competingCountries.forEach(country => {
+                    escScoreBoard[country] = { juryPoints: 0, telePoints: 0, totalPoints: 0 };
+                });
+
                 let currentJuryIndex = 0;
                 let isTelevotingMode = false;
                 let rows;
                 let currentTeleIndex = 0;
+
+                // Push escScoreBoard state into DOM cells (one-way: state → DOM)
+                function renderEscScores() {
+                    competingCountries.forEach(country => {
+                        const row = document.querySelector(`.eurovision-table tr[data-country="${country}"]`);
+                        if (!row) return;
+                        const s = escScoreBoard[country];
+                        row.querySelector('.jury-points').textContent = s.juryPoints;
+                        row.querySelector('.tele-points').textContent = s.telePoints;
+                        row.querySelector('.total-column').textContent = s.totalPoints;
+                    });
+                }
 
                 function updateTable() {
                     const tableBody = document.querySelector('.eurovision-table tbody');
@@ -4673,13 +4193,17 @@
                         return;
                     }
 
+                    // First push latest state to DOM
+                    renderEscScores();
+
                     const rows = Array.from(tableBody.querySelectorAll('tr'));
 
                     const currentPositions = new Map(rows.map((row, index) => [row.dataset.country, index]));
 
+                    // Sort based on escScoreBoard state (NOT DOM)
                     rows.sort((a, b) => {
-                        const aTotal = parseInt(a.querySelector('.total-column').textContent) || 0;
-                        const bTotal = parseInt(b.querySelector('.total-column').textContent) || 0;
+                        const aTotal = escScoreBoard[a.dataset.country]?.totalPoints || 0;
+                        const bTotal = escScoreBoard[b.dataset.country]?.totalPoints || 0;
                         if (aTotal !== bTotal) {
                             return bTotal - aTotal;
                         }
@@ -4738,28 +4262,26 @@
                         const juryVotes = results[votingCountry].juryVotesGiven;
 
                         Object.entries(juryVotes).forEach(([receiver, points]) => {
+                            // Update state first
+                            if (escScoreBoard[receiver]) {
+                                escScoreBoard[receiver].juryPoints += points;
+                                escScoreBoard[receiver].totalPoints = escScoreBoard[receiver].juryPoints + escScoreBoard[receiver].telePoints;
+                            }
+
+                            // Then update DOM display elements (per-voter column only)
                             const row = document.querySelector(`.eurovision-table tr[data-country="${receiver}"]`);
                             if (row) {
                                 const pointsCell = row.querySelector(`.points-column[data-voter="${votingCountry}"]`);
-                                const juryPointsCell = row.querySelector('.jury-points');
-                                const totalPointsCell = row.querySelector('.total-column');
 
-                                if (pointsCell && juryPointsCell && totalPointsCell) {
+                                if (pointsCell) {
                                     pointsCell.textContent = points;
                                     pointsCell.classList.add(`points-${points}`, 'fade-in');
                                     if (votingCountry === receiver) {
                                         pointsCell.classList.add('self-vote');
                                     }
-
-                                    const currentJuryPoints = parseInt(juryPointsCell.textContent) || 0;
-                                    const newJuryPoints = currentJuryPoints + points;
-
-                                    juryPointsCell.textContent = newJuryPoints;
-                                    totalPointsCell.textContent = newJuryPoints;
-
                                     console.log(`${votingCountry} gave ${points} points to ${receiver}`);
                                 } else {
-                                    console.error(`Unable to find all cells for ${receiver}`);
+                                    console.error(`Unable to find points cell for ${receiver}`);
                                 }
                             } else {
                                 console.error(`Row not found for ${receiver}`);
@@ -4792,29 +4314,26 @@
                             revealNextTele();
                             return;
                         }
+
+                        // Update state first
                         const telePoints = results[country].teleTotal;
+                        escScoreBoard[country].telePoints = telePoints;
+                        escScoreBoard[country].totalPoints = escScoreBoard[country].juryPoints + telePoints;
 
                         row.classList.add('current-televote');
 
-                        const telePointsCell = row.querySelector('.tele-points');
-                        const totalPointsCell = row.querySelector('.total-column');
-                        const juryPointsCell = row.querySelector('.jury-points');
                         const countryNameCell = row.querySelector('.receiving-country');
-
-                        if (!telePointsCell || !totalPointsCell || !juryPointsCell || !countryNameCell) {
+                        if (!countryNameCell) {
                             console.error(`Required cells not found for ${country}`);
                             currentTeleIndex++;
                             revealNextTele();
                             return;
                         }
 
-                        const currentJuryPoints = parseInt(juryPointsCell.textContent) || 0;
-                        const newTotalPoints = currentJuryPoints + telePoints;
-
                         setTimeout(() => {
-                            telePointsCell.textContent = telePoints;
-                            totalPointsCell.textContent = newTotalPoints;
-                            telePointsCell.classList.add('tele-points-revealed', 'fade-in');
+                            // Render state to DOM via renderEscScores (called by updateTable)
+                            const telePointsCell = row.querySelector('.tele-points');
+                            if (telePointsCell) telePointsCell.classList.add('tele-points-revealed', 'fade-in');
                             countryNameCell.classList.add('tele-points-revealed', 'fade-in');
                             row.classList.add('highlight');
                             row.classList.remove('current-televote');
@@ -4836,14 +4355,15 @@
                         document.getElementById('revealTelevotingButton').textContent = 'Reveal Next Televote';
 
                         rows = Array.from(document.querySelectorAll('.eurovision-table tbody tr'));
+                        // Sort by escScoreBoard state (NOT DOM)
                         rows.sort((a, b) => {
-                            const aJuryPoints = parseInt(a.querySelector('.jury-points')?.textContent) || 0;
-                            const bJuryPoints = parseInt(b.querySelector('.jury-points')?.textContent) || 0;
+                            const aJuryPoints = escScoreBoard[a.dataset.country]?.juryPoints || 0;
+                            const bJuryPoints = escScoreBoard[b.dataset.country]?.juryPoints || 0;
                             if (aJuryPoints !== bJuryPoints) {
                                 return aJuryPoints - bJuryPoints;
                             }
-                            const aCountry = a.querySelector('.receiving-country')?.textContent.trim() || '';
-                            const bCountry = b.querySelector('.receiving-country')?.textContent.trim() || '';
+                            const aCountry = a.dataset.country || '';
+                            const bCountry = b.dataset.country || '';
                             return bCountry.localeCompare(aCountry);
                         });
                         currentTeleIndex = 0;
@@ -5048,29 +4568,9 @@
                     Latest version notes: 1.2.5 (by u/alexsemilos)
                     In this release we add Christmas decorations
                 -->
-                <h6>Version 1.2.5 (by u/alexsemilos) <span class="badge bg-info">HOLIDAY UPDATE!</span></h6>
+                <h6>Version 1.2.5 (by u/alexsemilos)</h6>
                 <ul>
-                    <li style="color:green;"><strong>&lt;NEW FEATURE&gt; Christmas Decorations:</strong> Get into the holiday spirit with festive decorations!
-                        <ul>
-                            <li><strong>Animated Snowflakes</strong> - Beautiful falling snowflakes across the entire page</li>
-                            <li><strong>Christmas Lights</strong> - Colorful twinkling lights at the top of the page</li>
-                            <li><strong>Holiday Banner</strong> - Festive greeting banner with seasonal wishes</li>
-                            <li><strong>Festive Styling</strong> - Christmas tree emojis on the title and snowflakes on cards</li>
-                            <li><strong>Toggle Button</strong> - Don't like Christmas? Click the "🎄 CHRISTMAS MODE" button to turn it on/off. Your preference is saved!</li>
-                        </ul>
-                    </li>
-                    <li style="color:green;"><strong>&lt;NEW FEATURE&gt; Advent Calendar:</strong> A Eurovision-themed Advent Calendar with 24 doors!
-                        <ul>
-                            <li><strong>Daily Doors</strong> - Open one door each day from December 1-24</li>
-                            <li><strong>Eurovision Countries</strong> - Each door reveals a Eurovision country with its flag</li>
-                            <li><strong>Fun Facts</strong> - Learn interesting Eurovision trivia with each door</li>
-                            <li><strong>🎯 Eurovision Quiz</strong> - Each door has a trivia question about Eurovision! Answer correctly for points</li>
-                            <li><strong>Points System</strong> - Earn 10 points for each correct answer. Track your total score!</li>
-                            <li><strong>Progress Tracking</strong> - Your opened doors and quiz scores are saved</li>
-                            <li><strong>Reset Option</strong> - Start fresh anytime with the reset button</li>
-                        </ul>
-                    </li>
-                    <li style="color:green;"><strong>&lt;NEW FEATURE&gt; Christmas Leaderboard:</strong> Global statistics powered by Firebase!
+                    <li style="color:green;"><strong>&lt;NEW FEATURE&gt; Global Leaderboard:</strong> Global statistics powered by Firebase!
                         <ul>
                             <li><strong>🏆 Global Ranking</strong> - See which countries win the most across ALL users</li>
                             <li><strong>Total Simulations</strong> - Track how many simulations have been run worldwide</li>
@@ -5178,492 +4678,16 @@
             updateAQCheckboxStatus();
             document.addEventListener('DOMContentLoaded', updateAQCheckboxStatus);
 
-            // ===== CHRISTMAS SNOWFLAKES ANIMATION =====
-            function createSnowflakes() {
-                const snowflakesContainer = document.getElementById('snowflakes');
-                const snowflakeSymbols = ['❄', '❅', '❆', '✻', '✼', '❋'];
-                const numberOfSnowflakes = 50;
-
-                for (let i = 0; i < numberOfSnowflakes; i++) {
-                    const snowflake = document.createElement('div');
-                    snowflake.className = 'snowflake';
-                    snowflake.textContent = snowflakeSymbols[Math.floor(Math.random() * snowflakeSymbols.length)];
-
-                    // Random properties
-                    const leftPosition = Math.random() * 100;
-                    const animationDuration = Math.random() * 8 + 5; // 5-13 seconds
-                    const animationDelay = Math.random() * 10;
-                    const fontSize = Math.random() * 1.5 + 0.8; // 0.8-2.3em
-                    const opacity = Math.random() * 0.5 + 0.5; // 0.5-1
-
-                    snowflake.style.left = leftPosition + '%';
-                    snowflake.style.animationDuration = animationDuration + 's';
-                    snowflake.style.animationDelay = animationDelay + 's';
-                    snowflake.style.fontSize = fontSize + 'em';
-                    snowflake.style.opacity = opacity;
-
-                    snowflakesContainer.appendChild(snowflake);
-                }
-            }
-
-            // Create snowflakes when page loads
-            createSnowflakes();
-
-            // ===== CHRISTMAS TOGGLE FUNCTIONALITY =====
-            const christmasElements = {
-                lights: document.querySelector('.christmas-lights'),
-                snowflakes: document.getElementById('snowflakes'),
-                banner: document.querySelector('.christmas-banner')
+            // Firebase configuration
+            const firebaseConfig = {
+                apiKey: "AIzaSyBn3td6z^kYhcg~P6vgQrO2N1Qn-T",
+                authDomain: "eurovision-simulator.firebaseapp.com",
+                projectId: "eurovision-simulator",
+                storageBucket: "eurovision-simulator.firebasestorage.app",
+                messagingSenderId: "619727891514",
+                appId: "1:619727891514:web:cb8e0ca1351cb7e0acd903",
+                measurementId: "G-DPX10D8Z9E"
             };
-
-            function setChristmasMode(enabled) {
-                if (enabled) {
-                    christmasElements.lights.style.display = 'flex';
-                    christmasElements.snowflakes.style.display = 'block';
-                    christmasElements.banner.style.display = 'block';
-                    document.body.classList.add('christmas-enabled');
-                    document.getElementById('toggleChristmas').innerHTML = '🎄 CHRISTMAS: ON';
-                    document.getElementById('toggleChristmas').classList.remove('btn-secondary');
-                    document.getElementById('toggleChristmas').classList.add('btn-danger');
-                } else {
-                    christmasElements.lights.style.display = 'none';
-                    christmasElements.snowflakes.style.display = 'none';
-                    christmasElements.banner.style.display = 'none';
-                    document.body.classList.remove('christmas-enabled');
-                    document.getElementById('toggleChristmas').innerHTML = '🎄 CHRISTMAS: OFF';
-                    document.getElementById('toggleChristmas').classList.remove('btn-danger');
-                    document.getElementById('toggleChristmas').classList.add('btn-secondary');
-                }
-                localStorage.setItem('christmasMode', enabled);
-            }
-
-            // Load saved preference (default: enabled)
-            const savedChristmasMode = localStorage.getItem('christmasMode');
-            const christmasEnabled = savedChristmasMode === null ? true : savedChristmasMode === 'true';
-            setChristmasMode(christmasEnabled);
-
-            // Toggle button click handler
-            document.getElementById('toggleChristmas').addEventListener('click', () => {
-                const currentState = localStorage.getItem('christmasMode') !== 'false';
-                setChristmasMode(!currentState);
-            });
-
-            // ===== ADVENT CALENDAR FUNCTIONALITY =====
-            const adventCountries = [
-                {
-                    flag: '🇸🇪', name: 'Sweden', fact: 'Sweden has won Eurovision 7 times - the most shared record!',
-                    quiz: { question: 'How many times has Sweden won Eurovision?', answers: ['5', '6', '7', '8'], correct: 2 }
-                },
-                {
-                    flag: '🇮🇪', name: 'Ireland', fact: 'Ireland won Eurovision 3 times in a row (1992-1994)!',
-                    quiz: { question: 'Which country won Eurovision 3 times in a row?', answers: ['Sweden', 'Ireland', 'Luxembourg', 'UK'], correct: 1 }
-                },
-                {
-                    flag: '🇱🇺', name: 'Luxembourg', fact: 'Luxembourg won Eurovision 5 times despite its small size!',
-                    quiz: { question: 'How many times has Luxembourg won Eurovision?', answers: ['2', '3', '4', '5'], correct: 3 }
-                },
-                {
-                    flag: '🇫🇷', name: 'France', fact: 'France is a founding member of Eurovision since 1956!',
-                    quiz: { question: 'When was the first Eurovision Song Contest held?', answers: ['1950', '1956', '1960', '1965'], correct: 1 }
-                },
-                {
-                    flag: '🇳🇱', name: 'Netherlands', fact: 'The Netherlands hosted Eurovision 5 times!',
-                    quiz: { question: 'Which Dutch city hosted Eurovision in 2021?', answers: ['Amsterdam', 'The Hague', 'Rotterdam', 'Utrecht'], correct: 2 }
-                },
-                {
-                    flag: '🇬🇧', name: 'United Kingdom', fact: 'UK has finished in 2nd place more times than any other country!',
-                    quiz: { question: 'The UK has the most what in Eurovision history?', answers: ['Wins', '2nd places', 'Last places', 'Hosts'], correct: 1 }
-                },
-                {
-                    flag: '🇩🇪', name: 'Germany', fact: 'Germany has participated in every Eurovision since 1956!',
-                    quiz: { question: 'Which artist won Eurovision 2010 for Germany?', answers: ['Nicole', 'Lena', 'Cascada', 'Max Mutzke'], correct: 1 }
-                },
-                {
-                    flag: '🇮🇹', name: 'Italy', fact: 'Italy won Eurovision 2021 with Måneskin\'s "Zitti e buoni"!',
-                    quiz: { question: 'Which band won Eurovision 2021 for Italy?', answers: ['Mahmood', 'Il Volo', 'Måneskin', 'Diodato'], correct: 2 }
-                },
-                {
-                    flag: '🇪🇸', name: 'Spain', fact: 'Spain has received "nul points" twice in Eurovision!',
-                    quiz: { question: 'What does "nul points" mean in Eurovision?', answers: ['12 points', '0 points', 'Disqualified', 'Winner'], correct: 1 }
-                },
-                {
-                    flag: '🇨🇭', name: 'Switzerland', fact: 'Switzerland won the very first Eurovision in 1956!',
-                    quiz: { question: 'Which country won the first Eurovision in 1956?', answers: ['France', 'Germany', 'Switzerland', 'Netherlands'], correct: 2 }
-                },
-                {
-                    flag: '🇳🇴', name: 'Norway', fact: 'Norway holds the record for most last-place finishes!',
-                    quiz: { question: 'Which Norwegian group won Eurovision 1985?', answers: ['A-ha', 'Secret Garden', 'Bobbysocks', 'Alexander Rybak'], correct: 2 }
-                },
-                {
-                    flag: '🇩🇰', name: 'Denmark', fact: 'Denmark hosted Eurovision in 2014 in Copenhagen!',
-                    quiz: { question: 'What year did Emmelie de Forest win for Denmark?', answers: ['2011', '2012', '2013', '2014'], correct: 2 }
-                },
-                {
-                    flag: '🇫🇮', name: 'Finland', fact: 'Finland won in 2006 with Lordi - first hard rock winners!',
-                    quiz: { question: 'What genre did Lordi bring to Eurovision?', answers: ['Pop', 'Ballad', 'Hard Rock', 'EDM'], correct: 2 }
-                },
-                {
-                    flag: '🇦🇹', name: 'Austria', fact: 'Conchita Wurst won for Austria in 2014 and became an icon!',
-                    quiz: { question: 'What was Conchita Wurst\'s winning song called?', answers: ['Heroes', 'Rise Like a Phoenix', 'Euphoria', '1944'], correct: 1 }
-                },
-                {
-                    flag: '🇬🇷', name: 'Greece', fact: 'Greece and Cyprus often exchange 12 points for each other!',
-                    quiz: { question: 'Which Greek singer won Eurovision 2005?', answers: ['Sakis Rouvas', 'Helena Paparizou', 'Eleni Foureira', 'Kalomira'], correct: 1 }
-                },
-                {
-                    flag: '🇵🇹', name: 'Portugal', fact: 'Salvador Sobral won for Portugal in 2017 with record points!',
-                    quiz: { question: 'What was Salvador Sobral\'s winning song?', answers: ['Amar Pelos Dois', 'Medo De Sentir', 'O Jardim', 'Saudade'], correct: 0 }
-                },
-                {
-                    flag: '🇮🇱', name: 'Israel', fact: 'Israel has won Eurovision 4 times!',
-                    quiz: { question: 'Who won Eurovision 2018 for Israel?', answers: ['Dana International', 'Netta', 'Eden Alene', 'Nadav Guedj'], correct: 1 }
-                },
-                {
-                    flag: '🇺🇦', name: 'Ukraine', fact: 'Ukraine won Eurovision 3 times including 2022!',
-                    quiz: { question: 'Which Ukrainian band won Eurovision 2022?', answers: ['Go_A', 'Kalush Orchestra', 'Jamala', 'Ruslana'], correct: 1 }
-                },
-                {
-                    flag: '🇷🇸', name: 'Serbia', fact: 'Serbia won Eurovision on their debut in 2007!',
-                    quiz: { question: 'Who won Eurovision 2007 for Serbia?', answers: ['Jelena Tomašević', 'Marija Šerifović', 'Željko Joksimović', 'Konstrakta'], correct: 1 }
-                },
-                {
-                    flag: '🇪🇪', name: 'Estonia', fact: 'Estonia was the first former Soviet country to win in 2001!',
-                    quiz: { question: 'What country was the first ex-Soviet nation to win?', answers: ['Latvia', 'Lithuania', 'Estonia', 'Ukraine'], correct: 2 }
-                },
-                {
-                    flag: '🇦🇿', name: 'Azerbaijan', fact: 'Azerbaijan won Eurovision 2011 with "Running Scared"!',
-                    quiz: { question: 'In which city did Azerbaijan host Eurovision 2012?', answers: ['Baku', 'Ganja', 'Sumgait', 'Mingachevir'], correct: 0 }
-                },
-                {
-                    flag: '🇲🇹', name: 'Malta', fact: 'Malta has finished 2nd place three times but never won!',
-                    quiz: { question: 'How many times has Malta finished 2nd at Eurovision?', answers: ['1', '2', '3', '4'], correct: 2 }
-                },
-                {
-                    flag: '🇮🇸', name: 'Iceland', fact: 'Iceland has never won Eurovision but came close in 2009!',
-                    quiz: { question: 'Which Icelandic artist came 2nd in Eurovision 2009?', answers: ['Hatari', 'Daði Freyr', 'Yohanna', 'Systur'], correct: 2 }
-                },
-                {
-                    flag: '🇨🇾', name: 'Cyprus', fact: 'Cyprus and Greece have a strong voting bond for decades!',
-                    quiz: { question: 'What\'s the highest placement Cyprus has achieved?', answers: ['1st', '2nd', '3rd', '4th'], correct: 1 }
-                }
-            ];
-
-            function getOpenedDoors() {
-                const saved = localStorage.getItem('adventOpenedDoors');
-                return saved ? JSON.parse(saved) : [];
-            }
-
-            function getQuizScore() {
-                const saved = localStorage.getItem('adventQuizScore');
-                return saved ? parseInt(saved) : 0;
-            }
-
-            function addQuizScore(points) {
-                const current = getQuizScore();
-                localStorage.setItem('adventQuizScore', current + points);
-                return current + points;
-            }
-
-            function getAnsweredQuizzes() {
-                const saved = localStorage.getItem('adventAnsweredQuizzes');
-                return saved ? JSON.parse(saved) : [];
-            }
-
-            function markQuizAnswered(day) {
-                const answered = getAnsweredQuizzes();
-                if (!answered.includes(day)) {
-                    answered.push(day);
-                    localStorage.setItem('adventAnsweredQuizzes', JSON.stringify(answered));
-                }
-            }
-
-            function saveOpenedDoor(day) {
-                const opened = getOpenedDoors();
-                if (!opened.includes(day)) {
-                    opened.push(day);
-                    localStorage.setItem('adventOpenedDoors', JSON.stringify(opened));
-                }
-            }
-
-            function getCurrentDay() {
-                const now = new Date();
-                const month = now.getMonth(); // 0-11
-                const day = now.getDate();
-                // Only December counts, return day 1-24
-                if (month === 11 && day >= 1 && day <= 24) {
-                    return day;
-                }
-                return 24; // After Dec 24 or other months - all doors available
-            }
-
-            function showAdventCalendar() {
-                const currentDay = getCurrentDay();
-                const openedDoors = getOpenedDoors();
-
-                let doorsHTML = '';
-                for (let i = 1; i <= 24; i++) {
-                    const isOpened = openedDoors.includes(i);
-                    const isLocked = i > currentDay;
-                    const isToday = i === currentDay;
-
-                    let doorClass = 'advent-door';
-                    if (isOpened) doorClass += ' opened';
-                    if (isLocked) doorClass += ' locked';
-                    if (isToday && !isOpened) doorClass += ' today';
-
-                    const content = isOpened ? adventCountries[i - 1].flag : i;
-                    doorsHTML += `<div class="${doorClass}" data-day="${i}">${content}</div>`;
-                }
-
-                const adventHTML = `
-<div class="modal fade" id="adventModal" tabindex="-1" aria-labelledby="adventModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header" style="background: linear-gradient(135deg, #c41e3a 0%, #1a472a 100%); color: white;">
-                <h5 class="modal-title" id="adventModalLabel">📅 Eurovision Advent Calendar 🎄</h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <p class="text-center mb-3">
-                    <strong>Open a door each day to discover Eurovision countries and fun facts!</strong><br>
-                    <small>Today is December ${currentDay}th - you can open doors 1-${currentDay}</small>
-                </p>
-                <div class="advent-calendar-grid">
-                    ${doorsHTML}
-                </div>
-                <div class="advent-stats" style="background: linear-gradient(135deg, #1a472a 0%, #2d5a3d 100%);">
-                    <div>
-                        <div class="stat-number">${openedDoors.length}</div>
-                        <div>Doors Opened</div>
-                    </div>
-                    <div>
-                        <div class="stat-number">${24 - openedDoors.length}</div>
-                        <div>Doors Left</div>
-                    </div>
-                    <div>
-                        <div class="stat-number" id="quizScoreDisplay">${getQuizScore()}</div>
-                        <div>🎯 Quiz Points</div>
-                    </div>
-                    <div>
-                        <div class="stat-number">${getAnsweredQuizzes().length}/24</div>
-                        <div>Quizzes Done</div>
-                    </div>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-danger" id="resetAdventBtn">🔄 Reset Calendar</button>
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-            </div>
-        </div>
-    </div>
-</div>
-                `;
-
-                // Remove existing modal if present
-                const existingModal = document.getElementById('adventModal');
-                if (existingModal) existingModal.remove();
-
-                document.body.insertAdjacentHTML('beforeend', adventHTML);
-
-                const adventModal = new bootstrap.Modal(document.getElementById('adventModal'));
-                adventModal.show();
-
-                // Add click handlers for doors
-                document.querySelectorAll('.advent-door').forEach(door => {
-                    door.addEventListener('click', function () {
-                        const day = parseInt(this.dataset.day);
-                        const currentDay = getCurrentDay();
-
-                        if (day > currentDay) {
-                            alert(`🔒 This door is locked!\nCome back on December ${day}th to open it.`);
-                            return;
-                        }
-
-                        const openedDoors = getOpenedDoors();
-                        if (openedDoors.includes(day)) {
-                            // Already opened - show content again
-                            showDoorContent(day);
-                        } else {
-                            // Open for first time
-                            saveOpenedDoor(day);
-                            this.classList.add('opened');
-                            this.innerHTML = adventCountries[day - 1].flag;
-                            showDoorContent(day);
-
-                            // Update stats
-                            const newOpened = getOpenedDoors();
-                            document.querySelector('.advent-stats .stat-number').textContent = newOpened.length;
-                            document.querySelectorAll('.advent-stats .stat-number')[1].textContent = 24 - newOpened.length;
-                        }
-                    });
-                });
-
-                // Reset button handler
-                document.getElementById('resetAdventBtn').addEventListener('click', function () {
-                    if (confirm('🎄 Are you sure you want to reset your Advent Calendar?\nAll opened doors will be closed.')) {
-                        localStorage.removeItem('adventOpenedDoors');
-                        localStorage.removeItem('adventQuizScore');
-                        localStorage.removeItem('adventAnsweredQuizzes');
-                        adventModal.hide();
-                        showAdventCalendar();
-                    }
-                });
-            }
-
-            function showDoorContent(day) {
-                const country = adventCountries[day - 1];
-                const quiz = country.quiz;
-                const alreadyAnswered = getAnsweredQuizzes().includes(day);
-
-                let quizHTML = '';
-                if (alreadyAnswered) {
-                    quizHTML = `
-                        <div class="quiz-section" style="margin-top: 15px; padding: 15px; background: #e8f5e9; border-radius: 10px;">
-                            <p style="color: #2e7d32; font-weight: bold;">✅ You've already answered this quiz!</p>
-                            <p><strong>Question:</strong> ${quiz.question}</p>
-                            <p><strong>Correct Answer:</strong> ${quiz.answers[quiz.correct]}</p>
-                        </div>
-                    `;
-                } else {
-                    const answersHTML = quiz.answers.map((answer, index) =>
-                        `<button class="btn btn-outline-primary quiz-answer m-1" style="min-width: 120px;" data-index="${index}">${answer}</button>`
-                    ).join('');
-
-                    quizHTML = `
-                        <div class="quiz-section" style="margin-top: 15px; padding: 15px; background: #fff3e0; border-radius: 10px;">
-                            <p style="color: #e65100; font-weight: bold;">🎯 Eurovision Quiz - Answer for points!</p>
-                            <p style="font-weight: bold; margin-bottom: 10px;">${quiz.question}</p>
-                            <div class="quiz-answers" style="display: flex; flex-wrap: wrap; justify-content: center;">
-                                ${answersHTML}
-                            </div>
-                            <p id="quizFeedback" style="margin-top: 10px; font-weight: bold;"></p>
-                        </div>
-                    `;
-                }
-
-                const contentHTML = `
-<div class="modal fade" id="doorContentModal" tabindex="-1">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header" style="background: linear-gradient(135deg, #2989d8 0%, #1e5799 100%); color: white;">
-                <h5 class="modal-title">🎁 Day ${day} - ${country.name}!</h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body advent-content">
-                <div class="country-reveal">${country.flag}</div>
-                <div class="country-name">${country.name}</div>
-                <div class="fun-fact">
-                    <strong>🎵 Eurovision Fun Fact:</strong><br>
-                    ${country.fact}
-                </div>
-                ${quizHTML}
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-primary" data-bs-dismiss="modal">🎄 Continue</button>
-            </div>
-        </div>
-    </div>
-</div>
-                `;
-
-                const existingContent = document.getElementById('doorContentModal');
-                if (existingContent) existingContent.remove();
-
-                document.body.insertAdjacentHTML('beforeend', contentHTML);
-                const contentModal = new bootstrap.Modal(document.getElementById('doorContentModal'));
-                contentModal.show();
-
-                // Add quiz answer handlers if not already answered
-                if (!alreadyAnswered) {
-                    document.querySelectorAll('.quiz-answer').forEach(btn => {
-                        btn.addEventListener('click', function () {
-                            const selectedIndex = parseInt(this.dataset.index);
-                            const isCorrect = selectedIndex === quiz.correct;
-                            const feedback = document.getElementById('quizFeedback');
-
-                            // Disable all buttons
-                            document.querySelectorAll('.quiz-answer').forEach(b => {
-                                b.disabled = true;
-                                if (parseInt(b.dataset.index) === quiz.correct) {
-                                    b.classList.remove('btn-outline-primary');
-                                    b.classList.add('btn-success');
-                                }
-                            });
-
-                            if (isCorrect) {
-                                this.classList.add('btn-success');
-                                const newScore = addQuizScore(10);
-                                feedback.innerHTML = '🎉 <span style="color: green;">Correct! +10 points!</span> Your total: ' + newScore + ' points';
-                                // Add confetti effect
-                                this.innerHTML += ' ✓';
-                            } else {
-                                this.classList.remove('btn-outline-primary');
-                                this.classList.add('btn-danger');
-                                feedback.innerHTML = '❌ <span style="color: red;">Wrong!</span> The correct answer was: <strong>' + quiz.answers[quiz.correct] + '</strong>';
-                            }
-
-                            markQuizAnswered(day);
-
-                            // Update score display in calendar if visible
-                            const scoreDisplay = document.getElementById('quizScoreDisplay');
-                            if (scoreDisplay) {
-                                scoreDisplay.textContent = getQuizScore();
-                            }
-                        });
-                    });
-                }
-            }
-
-            // Advent Calendar button click handler
-            document.getElementById('adventCalendarButton').addEventListener('click', showAdventCalendar);
-
-            // ===== SECURITY PROTOCOL =====
-            // Unauthorized access to this section is strictly monitoring.
-
-            const _0xGen = {
-                _a: "eurovision-simulator",
-                _b: ".firebaseapp.com",
-                _c: ".firebasestorage.app",
-                _d: "619727891514",
-                _e: "1:619727891514:web:cb8e0ca1351cb7e0acd903",
-                _f: "G-DPX10D8Z9E"
-            };
-
-
-            const _0xPayload = [
-                "DL}dV|Gp6}]zQlif}Q9zhvEMQtvP<dD;05ORg:T",
-            ]; function _0xDecrypt(_s) {
-                let _r = "";
-                for (let i = 0; i < _s.length; i++) {
-                    _r += String.fromCharCode(_s.charCodeAt(i) - 3);
-                }
-                return _r;
-            }
-
-
-            function _0xGetConfig() {
-                const _h = window.location.hostname;
-
-
-                const _isSecure = _h.includes('github.io') || _h.includes('localhost') || _h.includes('127.0.0.1');
-
-                if (!_isSecure) {
-                    console.warn("⛔ SECURITY ALERT: Unauthorized Environment Detected. Countermeasures Active.");
-                    return null;
-                }
-
-                return {
-                    apiKey: _0xDecrypt(_0xPayload[0]), // Decrypts just-in-time
-                    authDomain: _0xGen._a + _0xGen._b,
-                    projectId: _0xGen._a,
-                    storageBucket: _0xGen._a + _0xGen._c,
-                    messagingSenderId: _0xGen._d,
-                    appId: _0xGen._e,
-                    measurementId: _0xGen._f
-                };
-            }
-
-            const firebaseConfig = _0xGetConfig() || { apiKey: "ACCESS_DENIED" };
 
             // Initialize Firebase (only if config is set)
             let db = null;
@@ -5687,78 +4711,6 @@
                     db = firebase.firestore();
                     firebaseEnabled = true;
                     console.log('🔥 Firebase connected successfully!');
-
-                    // ===== ANTI-EXPLOIT PROTECTION =====
-                    // Prevent direct window.db access for console exploits
-                    Object.defineProperty(window, 'db', {
-                        get: function () {
-                            console.warn('⛔ SECURITY: Direct db access blocked! Use official functions.');
-                            return null;
-                        },
-                        set: function () {
-                            console.warn('⛔ SECURITY: Cannot override db!');
-                        },
-                        configurable: false
-                    });
-
-                    // Block firebase.firestore() from returning usable instance for exploits
-                    const originalFirestore = firebase.firestore;
-                    let firestoreCallCount = 0;
-                    firebase.firestore = function () {
-                        firestoreCallCount++;
-                        // First call is legitimate (our init), subsequent calls are suspicious
-                        if (firestoreCallCount > 1) {
-                            console.warn('⛔ SECURITY: Suspicious firestore() call detected!');
-                            // Return a fake/neutered db object
-                            return {
-                                collection: function () {
-                                    console.warn('⛔ EXPLOIT BLOCKED: You cannot spam the leaderboard!');
-                                    return {
-                                        doc: () => ({
-                                            set: () => Promise.reject(new Error('BLOCKED')),
-                                            get: () => Promise.reject(new Error('BLOCKED')),
-                                            update: () => Promise.reject(new Error('BLOCKED'))
-                                        }),
-                                        get: () => Promise.reject(new Error('BLOCKED')),
-                                        orderBy: () => ({ limit: () => ({ get: () => Promise.reject(new Error('BLOCKED')) }) })
-                                    };
-                                }
-                            };
-                        }
-                        return originalFirestore.call(firebase);
-                    };
-                    // Restore static properties lost during proxying
-                    firebase.firestore.FieldValue = originalFirestore.FieldValue;
-                    firebase.firestore.Timestamp = originalFirestore.Timestamp;
-
-                    // Detect and warn about exploit scripts
-                    const exploitPatterns = ['realSpam', 'spam.palestine', 'spam.israel', 'spam.war', 'hack.'];
-                    const originalConsoleLog = console.log;
-                    let exploitWarningShown = false;
-
-                    // Monitor for exploit variables being created
-                    const exploitWatcher = setInterval(() => {
-                        if (window.realSpam || window.spam || window.hack) {
-                            if (!exploitWarningShown) {
-                                console.clear();
-                                console.log('%c⛔ EXPLOIT DETECTED AND BLOCKED! ⛔', 'color: red; font-size: 24px; font-weight: bold;');
-                                console.log('%cYour spam attempt has been logged and will not work.', 'color: red; font-size: 14px;');
-                                console.log('%cFirebase writes are protected by server-side rules.', 'color: orange;');
-                                exploitWarningShown = true;
-                            }
-                            // Neutralize exploit objects
-                            if (window.realSpam) {
-                                window.realSpam = { go: () => console.log('⛔ BLOCKED'), batch: () => console.log('⛔ BLOCKED'), war: () => console.log('⛔ BLOCKED') };
-                            }
-                            if (window.spam) {
-                                window.spam = { palestine: () => console.log('⛔ BLOCKED'), israel: () => console.log('⛔ BLOCKED'), test: () => console.log('⛔ BLOCKED') };
-                            }
-                            if (window.hack) {
-                                window.hack = { showTop: () => console.log('⛔ BLOCKED'), unlock: () => console.log('⛔ BLOCKED') };
-                            }
-                        }
-                    }, 500);
-
                 } else {
                     console.log('⚠️ Firebase not configured. Leaderboard will show demo data.');
                 }
@@ -5766,139 +4718,9 @@
                 console.error('Firebase initialization error:', error);
             }
 
-            // ===== ADVANCED ANTI-SPAM SYSTEM =====
-            const antiSpamSystem = {
-                // Comprehensive banned words/phrases (political, offensive, spam)
-                bannedPatterns: [
-                    // Israel-Palestine conflict (Boundaries removed for stricter matching)
-                    /palest[i1][n|\u006e]e?/i, /[i1]sra[e3]l/i, /g[a4]z[a4]/i, /h[a4]m[a4]s/i,
-                    /[i1]nt[i1]f[a4]d[a4]/i, /z[i1][o0]n[i1]st?s?/i, /\bnak?b[a4]\b/i,
-                    /\bidf\b/i, /hezboll?ah/i, /free.?palest/i, /from.?river/i,
-                    /aparthe[i1]d/i, /genoc[i1]de/i, /ethnic.?cleans/i, /j[e3]w[i1]sh/i,
-                    /\barab\b/i, /\bmuslim/i, /\bislam/i, /west.?bank/i, /\bbibi\b/i,
-                    /netanyahu/i, /\bwar.?crim/i, /\boccup[iy]/i,
-
-                    // Other political/controversial spam
-                    /n[a4]z[i1]/i, /h[i1]tl[e3]r/i, /wh[i1]te.?power/i,
-                    /\btrump\b/i, /\bb[i1]d[e3]n\b/i, /\bput[i1]n\b/i,
-                    /z[e3]l[e3]nsk/i, /\bukra[i1]n/i, /\bruss[i1][a4]\b/i,
-                    /comm?un[i1]st?/i, /f[a4]sc[i1]st?/i, /\bss\b/i, /\bkkk\b/i,
-
-                    // Offensive content (Stricter)
-                    /sh[i1!]t/i, /f+u+c+k+/i, /a+ss+/i, /b[i1]tch/i,
-                    /n[i1]gg?[a4e3]/i, /r[e3]t[a4]rd/i, /c+u+n+t+/i, /d[i1]ck/i,
-                    /wh[o0]r[e3]/i, /f[a4]g+[o0]?t?/i, /sl[u]t/i, /k[i1]k[e3]/i,
-                    /sp[i1]c/i, /ch[i1]nk/i, /gook/i, /trann?y/i,
-
-                    // Spam patterns
-                    /spam/i, /test.?spam/i, /test\d+/i,
-                    /buy.?now/i, /free.?money/i, /subscribe/i,
-                    /xxx/i, /porn/i, /sex/i, /viagra/i,
-                    /kill/i, /death/i, /hate/i
-                ],
-
-                // Normalization table for leet-speak and homoglyphs
-                normalizeMap: {
-                    '0': 'o', '1': 'i', '3': 'e', '4': 'a', '5': 's', '7': 't', '8': 'b',
-                    '@': 'a', '$': 's', '!': 'i', '|': 'i', '(': 'c',
-                    '\u0430': 'a', '\u0435': 'e', '\u043e': 'o', '\u0440': 'p', // Cyrillic lookalikes
-                    '\u0441': 'c', '\u0443': 'y', '\u0445': 'x', '\u0456': 'i'
-                },
-
-                // Rate limiting
-                lastSubmission: 0,
-                minSubmissionInterval: 3000, // 3 seconds
-
-                normalize(text) {
-                    if (!text || typeof text !== 'string') return '';
-                    let normalized = text.toLowerCase();
-                    // Replace leet-speak and homoglyphs
-                    for (const [char, replacement] of Object.entries(this.normalizeMap)) {
-                        normalized = normalized.split(char).join(replacement);
-                    }
-                    // Remove special characters that might be used to bypass filters
-                    normalized = normalized.replace(/[\s\-_\.\'\"]/g, '');
-                    return normalized;
-                },
-
-                containsBannedContent(text) {
-                    if (!text || typeof text !== 'string') return { banned: false };
-
-                    const normalized = this.normalize(text);
-                    const original = text.toLowerCase();
-
-                    for (const pattern of this.bannedPatterns) {
-                        if (pattern.test(normalized) || pattern.test(original)) {
-                            console.warn(`⚠️ Anti-spam: Blocked content matching pattern: ${pattern}`);
-                            return { banned: true, reason: 'Inappropriate or political content detected' };
-                        }
-                    }
-                    return { banned: false };
-                },
-
-                validateCountryName(name) {
-                    if (!name || typeof name !== 'string') {
-                        return { valid: false, reason: 'Invalid name' };
-                    }
-
-                    // Length check
-                    if (name.length < 2 || name.length > 50) {
-                        return { valid: false, reason: 'Name must be 2-50 characters' };
-                    }
-
-                    // Check for banned content
-                    const spamCheck = this.containsBannedContent(name);
-                    if (spamCheck.banned) {
-                        return { valid: false, reason: spamCheck.reason };
-                    }
-
-                    // Check for excessive special characters (spam indicator)
-                    const specialCharRatio = (name.match(/[^a-zA-Z\s]/g) || []).length / name.length;
-                    if (specialCharRatio > 0.4) {
-                        return { valid: false, reason: 'Too many special characters' };
-                    }
-
-                    return { valid: true };
-                },
-
-                canSubmit() {
-                    const now = Date.now();
-                    if (now - this.lastSubmission < this.minSubmissionInterval) {
-                        console.warn('⚠️ Anti-spam: Rate limit - submission too fast');
-                        return false;
-                    }
-                    this.lastSubmission = now;
-                    return true;
-                },
-
-                sanitizeForFirebase(text) {
-                    if (!text || typeof text !== 'string') return text;
-                    // Remove any control characters and normalize whitespace
-                    return text.replace(/[\x00-\x1F\x7F]/g, '').trim().substring(0, 50);
-                }
-            };
-
-            window.antiSpamSystem = antiSpamSystem;
-            console.log('🛡️ Anti-spam system initialized');
-
             // Record a simulation win to Firebase with detailed stats
             async function recordSimulationWin(winnerCountry, winnerCode, results, sortedCountries) {
                 if (!firebaseEnabled || !db) return;
-
-                // Anti-spam validation for custom countries
-                const validation = antiSpamSystem.validateCountryName(winnerCountry);
-                if (!validation.valid) {
-                    console.warn(`⚠️ Blocked leaderboard submission: ${validation.reason}`);
-                    return;
-                }
-
-                if (!antiSpamSystem.canSubmit()) {
-                    console.warn('⚠️ Rate limited - please wait before next simulation');
-                    return;
-                }
-
-                // Sanitize country name
-                winnerCountry = antiSpamSystem.sanitizeForFirebase(winnerCountry);
 
                 try {
                     const batch = db.batch();
@@ -6300,99 +5122,8 @@
 
 
 
-            const ESC_COUNTRIES = [
-                // Europe
-                { name: "Albania", code: "al" }, { name: "Andorra", code: "ad" }, { name: "Armenia", code: "am" },
-                { name: "Austria", code: "at" }, { name: "Azerbaijan", code: "az" }, { name: "Belarus", code: "by" },
-                { name: "Belgium", code: "be" }, { name: "Bosnia & Herzegovina", code: "ba" }, { name: "Bulgaria", code: "bg" },
-                { name: "Croatia", code: "hr" }, { name: "Cyprus", code: "cy" }, { name: "Czechia", code: "cz" },
-                { name: "Denmark", code: "dk" }, { name: "Estonia", code: "ee" }, { name: "Finland", code: "fi" },
-                { name: "France", code: "fr" }, { name: "Georgia", code: "ge" }, { name: "Germany", code: "de" },
-                { name: "Greece", code: "gr" }, { name: "Hungary", code: "hu" }, { name: "Iceland", code: "is" },
-                { name: "Ireland", code: "ie" }, { name: "Italy", code: "it" }, { name: "Kazakhstan", code: "kz" },
-                { name: "Kosovo", code: "xk" }, { name: "Latvia", code: "lv" }, { name: "Liechtenstein", code: "li" },
-                { name: "Lithuania", code: "lt" }, { name: "Luxembourg", code: "lu" }, { name: "Malta", code: "mt" },
-                { name: "Moldova", code: "md" }, { name: "Monaco", code: "mc" }, { name: "Montenegro", code: "me" },
-                { name: "Netherlands", code: "nl" }, { name: "North Macedonia", code: "mk" }, { name: "Norway", code: "no" },
-                { name: "Poland", code: "pl" }, { name: "Portugal", code: "pt" }, { name: "Romania", code: "ro" },
-                { name: "Russia", code: "ru" }, { name: "San Marino", code: "sm" }, { name: "Serbia", code: "rs" },
-                { name: "Slovakia", code: "sk" }, { name: "Slovenia", code: "si" }, { name: "Spain", code: "es" },
-                { name: "Sweden", code: "se" }, { name: "Switzerland", code: "ch" }, { name: "Turkey", code: "tr" },
-                { name: "Ukraine", code: "ua" }, { name: "United Kingdom", code: "gb" }, { name: "Vatican City", code: "va" },
-
-                // Americas
-                { name: "Antigua & Barbuda", code: "ag" }, { name: "Argentina", code: "ar" }, { name: "Bahamas", code: "bs" },
-                { name: "Barbados", code: "bb" }, { name: "Belize", code: "bz" }, { name: "Bolivia", code: "bo" },
-                { name: "Brazil", code: "br" }, { name: "Canada", code: "ca" }, { name: "Chile", code: "cl" },
-                { name: "Colombia", code: "co" }, { name: "Costa Rica", code: "cr" }, { name: "Cuba", code: "cu" },
-                { name: "Dominica", code: "dm" }, { name: "Dominican Republic", code: "do" }, { name: "Ecuador", code: "ec" },
-                { name: "El Salvador", code: "sv" }, { name: "Grenada", code: "gd" }, { name: "Guatemala", code: "gt" },
-                { name: "Guyana", code: "gy" }, { name: "Haiti", code: "ht" }, { name: "Honduras", code: "hn" },
-                { name: "Jamaica", code: "jm" }, { name: "Mexico", code: "mx" }, { name: "Nicaragua", code: "ni" },
-                { name: "Panama", code: "pa" }, { name: "Paraguay", code: "py" }, { name: "Peru", code: "pe" },
-                { name: "Saint Kitts & Nevis", code: "kn" }, { name: "Saint Lucia", code: "lc" }, { name: "Saint Vincent", code: "vc" },
-                { name: "Suriname", code: "sr" }, { name: "Trinidad & Tobago", code: "tt" }, { name: "United States", code: "us" },
-                { name: "Uruguay", code: "uy" }, { name: "Venezuela", code: "ve" },
-
-                // Asia & Oceania
-                { name: "Afghanistan", code: "af" }, { name: "Australia", code: "au" }, { name: "Bangladesh", code: "bd" },
-                { name: "Bhutan", code: "bt" }, { name: "Brunei", code: "bn" }, { name: "Cambodia", code: "kh" },
-                { name: "China", code: "cn" }, { name: "East Timor", code: "tl" }, { name: "Fiji", code: "fj" },
-                { name: "India", code: "in" }, { name: "Indonesia", code: "id" }, { name: "Iran", code: "ir" },
-                { name: "Iraq", code: "iq" }, { name: "Israel", code: "il" }, { name: "Japan", code: "jp" },
-                { name: "Jordan", code: "jo" }, { name: "Kiribati", code: "ki" }, { name: "Kuwait", code: "kw" },
-                { name: "Kyrgyzstan", code: "kg" }, { name: "Laos", code: "la" }, { name: "Lebanon", code: "lb" },
-                { name: "Malaysia", code: "my" }, { name: "Maldives", code: "mv" }, { name: "Marshall Islands", code: "mh" },
-                { name: "Micronesia", code: "fm" }, { name: "Mongolia", code: "mn" }, { name: "Myanmar", code: "mm" },
-                { name: "Nauru", code: "nr" }, { name: "Nepal", code: "np" }, { name: "New Zealand", code: "nz" },
-                { name: "North Korea", code: "kp" }, { name: "Oman", code: "om" }, { name: "Pakistan", code: "pk" },
-                { name: "Palau", code: "pw" }, { name: "Palestine", code: "ps" }, { name: "Papua New Guinea", code: "pg" },
-                { name: "Philippines", code: "ph" }, { name: "Qatar", code: "qa" }, { name: "Samoa", code: "ws" },
-                { name: "Saudi Arabia", code: "sa" }, { name: "Singapore", code: "sg" }, { name: "Solomon Islands", code: "sb" },
-                { name: "South Korea", code: "kr" }, { name: "Sri Lanka", code: "lk" }, { name: "Syria", code: "sy" },
-                { name: "Taiwan", code: "tw" }, { name: "Tajikistan", code: "tj" }, { name: "Thailand", code: "th" },
-                { name: "Tonga", code: "to" }, { name: "Turkmenistan", code: "tm" }, { name: "Tuvalu", code: "tv" },
-                { name: "UAE", code: "ae" }, { name: "Uzbekistan", code: "uz" }, { name: "Vanuatu", code: "vu" },
-                { name: "Vietnam", code: "vn" }, { name: "Yemen", code: "ye" },
-
-                // Africa
-                { name: "Algeria", code: "dz" }, { name: "Angola", code: "ao" }, { name: "Benin", code: "bj" },
-                { name: "Botswana", code: "bw" }, { name: "Burkina Faso", code: "bf" }, { name: "Burundi", code: "bi" },
-                { name: "Cabo Verde", code: "cv" }, { name: "Cameroon", code: "cm" }, { name: "CAR", code: "cf" },
-                { name: "Chad", code: "td" }, { name: "Comoros", code: "km" }, { name: "Congo (DRC)", code: "cd" },
-                { name: "Congo (Republic)", code: "cg" }, { name: "Cote d'Ivoire", code: "ci" }, { name: "Djibouti", code: "dj" },
-                { name: "Egypt", code: "eg" }, { name: "Equatorial Guinea", code: "gq" }, { name: "Eritrea", code: "er" },
-                { name: "Eswatini", code: "sz" }, { name: "Ethiopia", code: "et" }, { name: "Gabon", code: "ga" },
-                { name: "Gambia", code: "gm" }, { name: "Ghana", code: "gh" }, { name: "Guinea", code: "gn" },
-                { name: "Guinea-Bissau", code: "gw" }, { name: "Kenya", code: "ke" }, { name: "Lesotho", code: "ls" },
-                { name: "Liberia", code: "lr" }, { name: "Libya", code: "ly" }, { name: "Madagascar", code: "mg" },
-                { name: "Malawi", code: "mw" }, { name: "Mali", code: "ml" }, { name: "Mauritania", code: "mr" },
-                { name: "Mauritius", code: "mu" }, { name: "Morocco", code: "ma" }, { name: "Mozambique", code: "mz" },
-                { name: "Namibia", code: "na" }, { name: "Niger", code: "ne" }, { name: "Nigeria", code: "ng" },
-                { name: "Rwanda", code: "rw" }, { name: "Sao Tome & Principe", code: "st" }, { name: "Senegal", code: "sn" },
-                { name: "Seychelles", code: "sc" }, { name: "Sierra Leone", code: "sl" }, { name: "Somalia", code: "so" },
-                { name: "South Africa", code: "za" }, { name: "South Sudan", code: "ss" }, { name: "Sudan", code: "sd" },
-                { name: "Tanzania", code: "tz" }, { name: "Togo", code: "tg" }, { name: "Tunisia", code: "tn" },
-                { name: "Uganda", code: "ug" }, { name: "Zambia", code: "zm" }, { name: "Zimbabwe", code: "zw" }
-            ];
-
-            const AVAILABLE_TAGS = [
-                // General
-                "Eurofan", "Statistician", "Casual", "Predictor", "Sim Addict",
-                // Roles
-                "Jury Member", "Televoter", "Artist", "Historian", "Composer", "Commentator", "Journalist",
-                // Specific Interests
-                "JESC Fan", "NF Watcher", "San Remo Enjoyer", "Melodifestivalen Fan", "Chart Maker",
-                "Winner Predictor", "Underdog Fan", "Big 5 Hater", "Big 5 Lover",
-                // Fun / Personality
-                "Flag Nerd", "Map Lover", "Ballad Lover", "Bop Enjoyer", "Ethno-Bop Fan",
-                "Rock Fan", "Joke Entry Stan", "Robbed Queen Support", "Null Points Fear",
-                "Dark Horse Hunter", "Live Show Purist", "Studio Cut Only", "Postcard Critic",
-                "Stage Design Nerd", "Green Room Stalker", "Wind Machine Enthusiast",
-                "Key Change Spotter", "Pyrotechnics Fan", "Chaos Agent", "Peace & Love",
-                "Old School (Pre-2000)", "New School (Post-2010)", "Golden Era (2000s)",
-                "Recap Watcher", "Iceberg Explorer", "Reaction Video Addict"
-            ];
+            let ESC_COUNTRIES = [];
+            let AVAILABLE_TAGS = [];
 
             async function openProfileModal(targetUid) {
                 const modalEl = document.getElementById('profileModal');
